@@ -1,6 +1,8 @@
 <!-- templates/landing_preauth.html -->
 <!DOCTYPE html>
 <html lang="en">
+<link href="https://fonts.googleapis.com/css2?family=New+Amsterdam:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,17 +10,21 @@
     <title>Landing Page (Pre-Auth)</title>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Gesture Recognition App</h1>
-        <nav>
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
+    <div class = "top-bar">
+        <header>
+            <h1>Break the Silence</h1>
+            <nav id="top-buttons">  <!-- Make sure to use id 'top-buttons' -->
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
+            </nav>
+        </header>
+    </div>
+    <div class="main-container">
+        <div class="main-text">Giving a voice to the voiceless.</div>
+        <div class="main-descriptor">This app uses advanced gesture recognition to provide unique interactions.</div>
+        <nav id="get-started">
+            <a href="{{ url_for('login') }}" class="button">Get Started</a>
         </nav>
-    </header>
-    <div class="container">
-        <h2>Get Started with Gesture Recognition!</h2>
-        <p>This app uses advanced gesture recognition to provide unique interactions.</p>
-        <a href="{{ url_for('login') }}" class="button">Get Started</a>
     </div>
     <footer class="footer">
         <p>&copy; 2024 Gesture Recognition App</p>
