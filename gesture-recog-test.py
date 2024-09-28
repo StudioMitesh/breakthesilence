@@ -6,7 +6,7 @@ import time
 import os
 
 # Check if MediaPipe model exists
-model_path = './model/gesture_recognizer.task'
+model_path = './cv/model/gesture_recognizer.task'
 canned_gestures = [
     "None", "Closed_Fist", "Open_Palm", "Pointing_Up", 
     "Thumb_Down", "Thumb_Up", "Victory", "ILoveYou"
