@@ -160,7 +160,18 @@ def stop_gesture_recognition():
 
 @app.route('/get_gestures', methods=['GET'])
 def get_gestures():
-    return jsonify(log_output)
+    gestures_list = []
+    with open("./log.txt", "r") as f:
+        gestures_list = f.readlines()
+
+    '''
+    gestures = db.collection('gestures').stream()
+    for gesture in gestures:
+        gestures_list.append(f"Gesture: {gesture.get('gesture_name')}, Score: {gesture.get('score')}")
+        '''
+
+    return jsonify(gestures_list)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

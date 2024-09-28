@@ -3,72 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gesture Recognition</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Camera</title>
+    <link rel="stylesheet" href="style.css"> <!-- Add your CSS file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
     <h1>Gesture Recognition</h1>
-    <div id="camera-feed">
-        <video id="video" width="640" height="480" autoplay></video>
+    <video id="video" width="640" height="480" autoplay></video>
+    <div>
+        <button id="start-button">Start Gesture Recognition</button>
+        <button id="stop-button">Stop Gesture Recognition</button>
     </div>
-    <div id="controls">
-        <button id="start-button">Start Recognition</button>
-        <button id="stop-button">Stop Recognition</button>
-    </div>
-    <div id="log">
-        <h2>Gesture Log</h2>
-        <ul id="gesture-log"></ul>
-    </div>
+    <h2>Gesture Log</h2>
+    <ul id="gesture-log"></ul>
 
     <script>
-        const startButton = document.getElementById('start-button');
-        const stopButton = document.getElementById('stop-button');
-        const gestureLog = document.getElementById('gesture-log');
+        // Start camera feed
+        const video = document.getElementById('video');
 
-        startButton.addEventListener('click', () => {
-            fetch('/start_gesture_recognition', {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-
-        stopButton.addEventListener('click', () => {
-            fetch('/stop_gesture_recognition', {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-
-        function fetchLog() {
-            fetch('/log')
-            .then(response => response.json())
-            .then(logData => {
-                gestureLog.innerHTML = ''; // Clear existing log
-                logData.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    gestureLog.appendChild(li);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({
+                video: true
+            }).then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+            }).catch(function(error) {
+                console.error("Error accessing the camera: ", error);
             });
         }
 
-        // Fetch the log periodically
-        setInterval(fetchLog, 2000); // Update log every 2 seconds
+        // Start button functionality
+        $('#start-button').on('click', function() {
+            $.post('/start_gesture_recognition', function(data) {
+                console.log(data.status);
+            }).fail(function(err) {
+                console.error(err);
+            });
+        });
+
+        // Stop button functionality
+        $('#stop-button').on('click', function() {
+            $.post('/stop_gesture_recognition', function(data) {
+                console.log(data.status);
+            }).fail(function(err) {
+                console.error(err);
+            });
+        });
+
+        // Fetch log
+        function fetchLog() {
+            $.get('/get_gestures', function(data) {
+                $('#gesture-log').empty();
+                data.forEach(function(gesture) {
+                    $('#gesture-log').append('<li>' + gesture + '</li>');
+                });
+            }).fail(function(err) {
+                console.error(err);
+            });
+        }
+
+        // Automatically fetch log
+        setInterval(fetchLog, 5000); // Adjust the interval as needed
     </script>
 </body>
 </html>
