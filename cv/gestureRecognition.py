@@ -4,7 +4,7 @@ import time
 from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
 
-model_path = './model/gesture_recognizer.task'
+model_path = './cv/model/gesture_recognizer.task'
 base_options = BaseOptions(model_asset_path=model_path)
 
 signal_count = 0

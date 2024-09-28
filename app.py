@@ -3,8 +3,9 @@ from landing_preauth import landing_preauth
 from login import login
 from landing_postauth import landing_postauth
 from streamlit_camera import streamlit_camera
-from cv.gestureRecognition import gesture_recognition
+#from cv.gestureRecognition import gesture_recognition
 from llm import llm
+from test import test
 
 # initialize page state
 if 'current_page' not in st.session_state:
@@ -21,9 +22,11 @@ elif st.session_state['current_page'] == 'login':
     login(navigate_to)
 elif st.session_state['current_page'] == 'post_login':
     landing_postauth(navigate_to)
+elif st.session_state['current_page'] == 'test':
+    test(navigate_to)
 elif st.session_state['current_page'] == 'camera':
     streamlit_camera(navigate_to)
-elif st.session_state['current_page'] == 'gesture_recognition':
-    gesture_recognition(navigate_to)
+#elif st.session_state['current_page'] == 'gesture_recognition':
+ #   gesture_recognition(navigate_to)
 elif st.session_state['current_page'] == 'llm_output':
     llm(navigate_to)
