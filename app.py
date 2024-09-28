@@ -11,7 +11,7 @@ from firebase_admin import credentials, firestore, auth
 app = Flask(__name__)
 
 # Firebase setup
-cred = credentials.Certificate("hackgt-11-firebase-adminsdk-o5ziq-f4f2cd7c75.json")
+cred = credentials.Certificate("/Users/mites/Documents/HackGT11/hackgt-11-firebase-adminsdk-o5ziq-f4f2cd7c75.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -134,6 +134,10 @@ def landing_postauth():
 @app.route('/camera')
 def camera():
     return render_template('camera.html')
+
+@app.route('/llm')
+def llm():
+    return render_template('llm.html')
 
 @app.route('/start_gesture_recognition', methods=['POST'])
 def start_gesture_recognition():
