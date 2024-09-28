@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "public": "hackgt-11",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "functions": {
+    "source": "functions"
+  }
+}

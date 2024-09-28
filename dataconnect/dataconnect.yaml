@@ -1,5 +1,5 @@
 specVersion: "v1beta"
-serviceId: "HackGT11"
+serviceId: "hackgt-11"
 location: "us-central1"
 schema:
   source: "./schema"
@@ -7,6 +7,6 @@ schema:
     postgresql:
       database: "fdcdb"
       cloudSql:
-        instanceId: "HackGT11-fdc"
+        instanceId: "hackgt-11-fdc"
       # schemaValidation: "COMPATIBLE"
 connectorDirs: ["./connector"]
