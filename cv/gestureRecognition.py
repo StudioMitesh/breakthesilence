@@ -3,6 +3,15 @@ import cv2
 import time
 from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
+import json
+
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+cred = credentials.Certificate("hackgt-11-firebase-adminsdk-o5ziq-f4f2cd7c75.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
 
 model_path = './model/gesture_recognizer.task'
 base_options = BaseOptions(model_asset_path=model_path)
@@ -27,6 +36,16 @@ with open("./log.txt", "w") as f:
                     signal_count += 1  # Update signal count when a new gesture is recognized
                 past_gesture[0] = gesture_name
             print(gesture_name)
+
+        user_id = "test1"
+        db.collection('gestures').add({
+            'user_id': user_id,
+            'gesture_name': gesture_name,
+            'score': gesture_category.score,
+            'timestamp': firestore.SERVER_TIMESTAMP
+        })
+        print(f"Written to Firestore: Gesture: {gesture_name}, Score: {gesture_category.score}")
+
 
 
     options = GestureRecognizerOptions(

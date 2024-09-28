@@ -35,6 +35,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    function fetchGestures() {
+        $.get('/get_gestures', function(data) {
+            $('#gesture-results').empty();
+            data.forEach(function(gesture) {
+                $('#gesture-results').append('<p>' + gesture + '</p>');
+            });
+        });
+    }
+
     // Start the video on page load
     startVideo();
+    setInterval(fetchGestures, 5000);
+    fetchGestures();
 });

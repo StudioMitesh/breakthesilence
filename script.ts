@@ -17,6 +17,8 @@ const gestureOutput = document.getElementById("gesture_output") as HTMLDivElemen
 const videoWidth = 1280;
 const videoHeight = 720;
 
+let gestureRecognizer: GestureRecognizer | null = null; // Initialize as null
+
 // Setup the gesture recognizer
 async function createGestureRecognizer() {
   const vision = await FilesetResolver.forVisionTasks(
@@ -29,12 +31,8 @@ async function createGestureRecognizer() {
       delegate: "GPU"
     },
     runningMode: "VIDEO" // Set the running mode to video
-  });
-
-  // Remove invisible class from video element (optional)
-  videoElement.classList.remove("invisible");
+  }) as GestureRecognizer;
 }
-
 createGestureRecognizer();
 
 async function recognizeGesture() {
@@ -55,8 +53,9 @@ async function recognizeGesture() {
 
     while (signalCount < 2) {
       // Perform gesture recognition at each frame
-      let nowInMs = Date.now();
-      let results = await gestureRecognizer.recognizeForVideo(videoElement, nowInMs);
+      let time = Date.now();
+      let results = await gestureRecognizer.recognizeForVideo(videoElement, time);
+      
 
       canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 

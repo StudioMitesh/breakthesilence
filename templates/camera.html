@@ -4,21 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Camera Page</title>
+    <title>Gesture Recognition</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Gesture Recognition</h1>
-    </header>
-    <div class="container">
-        <h2>Camera Feed</h2>
-        <video id="video" width="640" height="480" autoplay></video>
-        <button id="start">Start Recognition</button>
+    <div style="display: flex;">
+        <div id="video-container" style="flex: 1;">
+            <h2>Camera Feed</h2>
+            <video id="video" width="640" height="480" autoplay></video>
+            <button id="start">Start Recognition</button>
+            <button id="stop">Stop Recognition</button>
+        </div>
+        <div id="log-container" style="flex: 1; padding: 20px;">
+            <h2>Gesture Log</h2>
+            <ul id="gesture-log"></ul>
+        </div>
     </div>
-    <footer class="footer">
-        <p>&copy; 2024 Gesture Recognition App</p>
-    </footer>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        // Start gesture recognition
+        $('#start').click(function() {
+            $.post('/start_gesture_recognition', function(data) {
+                console.log(data.status);
+                fetchLog();  // Fetch log after starting recognition
+            });
+        });
+
+        // Stop gesture recognition
+        $('#stop').click(function() {
+            $.post('/stop_gesture_recognition', function(data) {
+                console.log(data.status);
+            });
+        });
+
+        // Fetch and update the gesture log
+        function fetchLog() {
+            $.get('/log', function(data) {
+                $('#gesture-log').empty();
+                data.forEach(function(item) {
+                    $('#gesture-log').append('<li>' + item + '</li>');
+                });
+            });
+        }
+
+        // Refresh log every second
+        setInterval(fetchLog, 1000);
+    </script>
 </body>
 </html>
