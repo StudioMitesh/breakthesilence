@@ -1,62 +1,108 @@
-/* static/css/style.css */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #003459;
+    font-family: 'Outfit', sans-serif;
     margin: 0;
     padding: 0;
 }
 
-header {
-    background: #007bff;
+.top-bar {
+    /* background: #00171F; */
     color: white;
-    padding: 10px 0;
-    text-align: center;
+    font-size: 20px;
+    padding: 10px;
+    position: relative;
+    text-align: left;
+    margin-left: 20px;
+    font-family: 'New Amsterdam', sans-serif; /* Change font here too */
+    font-weight: 800; /* You may adjust or remove if needed */
+    line-height: 1em;
 }
 
-nav {
-    margin: 20px 0;
+nav#top-buttons {
+    position: absolute;
+    font-family: 'Outfit', sans-serif; /* Use the Outfit font */
+    right: 10px; /* Align buttons to the right side */
+    top: 50%; /* Center vertically relative to the header */
+    transform: translateY(-50%); /* Adjust to vertically center the buttons */
 }
 
-nav a {
+nav#top-buttons a {
     color: white;
+    font-size: 20px;
     text-decoration: none;
     padding: 10px 15px;
+    /* background-color: #B0C4B1; */
+    margin-right: 10px;
+    border-radius: 10px;
 }
 
-nav a:hover {
-    background: #0056b3;
-    border-radius: 5px;
+nav#top-buttons a:hover {
+    background: #007EA7;
+    border-radius: 10px;
 }
 
-.container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
+nav#get-started {
+    position: absolute;
+    font-family: 'Outfit', sans-serif; /* Use the Outfit font */ 
 }
 
-h1 {
-    margin-bottom: 10px;
+nav#get-started a {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 10px 15px;
+    background-color: #007EA7;
+    margin-left: 0px;
+    border-radius: 10px;
+}
+
+nav#get-started a:hover {
+    background: #DEDBD2;
+    border-radius: 10px;
+}
+
+
+.main-container {
+    color : white;
+    width: 80%; /* You can adjust this width as needed */
+    margin: 100px auto; /* Center the container and move it down */
+}
+
+.main-text {
+    font-family: 'Outfit', sans-serif; /* Use the Outfit font */
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0; /* Remove margin to ensure it aligns with the next element */
+}
+
+.main-descriptor {
+    font-family: 'Outfit', sans-serif; /* Use the Outfit font */
+    font-size: 20px;
+    margin: 10px 0; /* Space between main text and descriptor */
 }
 
 .button {
     display: inline-block;
     padding: 10px 20px;
-    margin: 10px 0;
     border: none;
     background: #007bff;
     color: white;
     border-radius: 5px;
     text-decoration: none;
+    font-family: 'Outfit', sans-serif; /* Use the Outfit font */
+    font-size: 20px;
+    margin-top: 20px; /* Space between descriptor and button */
 }
 
 .button:hover {
     background: #0056b3;
 }
 
+
 .footer {
     text-align: center;
-    padding: 10px 0;
-    background: #007bff;
+    padding: 0px 0;
+    background: #007EA7;
     color: white;
     position: absolute;
     bottom: 0;

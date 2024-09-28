@@ -11,9 +11,9 @@ from firebase_admin import credentials, firestore, auth
 app = Flask(__name__)
 
 # Firebase setup
-cred = credentials.Certificate("/Users/mites/Documents/HackGT11/hackgt-11-firebase-adminsdk-o5ziq-f4f2cd7c75.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+# cred = credentials.Certificate("/Users/mites/Documents/HackGT11/hackgt-11-firebase-adminsdk-o5ziq-f4f2cd7c75.json")
+# firebase_admin.initialize_app(cred)
+# db = firestore.client()
 
 # Global variables for gesture recognition
 is_recognizing = False
