@@ -1,48 +1,48 @@
-import streamlit as st
 import mediapipe as mp
 import cv2
 import time
 from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
-import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
 
+model_path = './model/gesture_recognizer.task'
+canned_gestures = ["None", "Closed_Fist", "Open_Palm", "Pointing_Up", "Thumb_Down", "Thumb_Up", "Victory", "ILoveYou"]
+base_options = BaseOptions(model_asset_path=model_path)
 
-def gesture_recognition(navigate_to):
-    model_path = './cv/model/gesture_recognizer.task'
-    canned_gestures = ["None", "Closed_Fist", "Open_Palm", "Pointing_Up", "Thumb_Down", "Thumb_Up", "Victory", "ILoveYou"]
-    base_options = BaseOptions(model_asset_path=model_path)
-    GestureRecognizer = mp.tasks.vision.GestureRecognizer
-    GestureRecognizerOptions = mp.tasks.vision.GestureRecognizerOptions
-    GestureRecognizerResult = mp.tasks.vision.GestureRecognizerResult
-    VisionRunningMode = mp.tasks.vision.RunningMode
+signal_count = 0
+gestures = ['None']
 
-    # Create a gesture recognizer instance with the live stream mode:
+with open("./log.txt", "w") as f:
     def print_result(result: GestureRecognizerResult, output_image: mp.Image, timestamp_ms: int):
-        if(result.gestures and result.gestures[0]):
+        global signal_count 
+        if result.gestures and result.gestures[0]:
             gesture_category = result.gestures[0][0]
-            print('Gesture:', gesture_category.category_name)
-            print('Index:', canned_gestures.index(gesture_category.category_name))
-            print('Score:', gesture_category.score)
+            gesture_name = gesture_category.category_name
+
+            # Only log new gestures
+            if gesture_name != 'None' and gestures[-1] != gesture_name:
+                f.write(f'Gesture: {gesture_name}\n')
+                f.write(f'Index: {canned_gestures.index(gesture_name)}\n')
+                f.write(f'Score: {gesture_category.score}\n\n')
+                gestures.append(gesture_name)
+                signal_count += 1  # Update signal count when a new gesture is recognized
 
 
     options = GestureRecognizerOptions(
         base_options=base_options,
-        running_mode=VisionRunningMode.LIVE_STREAM,  # Live stream mode
+        running_mode=mp.tasks.vision.RunningMode.LIVE_STREAM,  # Live stream mode
         result_callback=print_result
-        )
+    )
 
     with GestureRecognizer.create_from_options(options) as recognizer:
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
-            print("Error: Could not open camera")
+            print("Error: Could not open camera.")
             exit()
         
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
-                print("Error: Could not capture frame in video")
+                print("Error: Could not capture frame in video.")
                 break
             
             # Convert the frame to RGB for MediaPipe
@@ -60,6 +60,9 @@ def gesture_recognition(navigate_to):
             # Show the frame with OpenCV
             cv2.imshow("Gesture Recognition", frame)
             
+            if signal_count>=2:
+                print("Detected two gestures.")
+                break
             # Break the loop if 'q' is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -67,3 +70,4 @@ def gesture_recognition(navigate_to):
         # Release the capture and close the window
         cap.release()
         cv2.destroyAllWindows()
+
