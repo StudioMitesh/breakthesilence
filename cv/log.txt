@@ -1,0 +1,6 @@
+Gesture: Open_Palm
+Score: 0.7072283625602722
+
+Gesture: Closed_Fist
+Score: 0.9307758212089539
+

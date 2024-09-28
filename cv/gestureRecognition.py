@@ -5,7 +5,6 @@ from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
 
 model_path = './model/gesture_recognizer.task'
-canned_gestures = ["None", "Closed_Fist", "Open_Palm", "Pointing_Up", "Thumb_Down", "Thumb_Up", "Victory", "ILoveYou"]
 base_options = BaseOptions(model_asset_path=model_path)
 
 signal_count = 0
@@ -21,7 +20,6 @@ with open("./log.txt", "w") as f:
             # Only log new gestures
             if gesture_name != 'None' and gestures[-1] != gesture_name:
                 f.write(f'Gesture: {gesture_name}\n')
-                f.write(f'Index: {canned_gestures.index(gesture_name)}\n')
                 f.write(f'Score: {gesture_category.score}\n\n')
                 gestures.append(gesture_name)
                 signal_count += 1  # Update signal count when a new gesture is recognized
