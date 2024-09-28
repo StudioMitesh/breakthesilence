@@ -112,7 +112,6 @@ def login():
         password = request.form['password']
         try:
             user = auth.get_user_by_email(email)
-            # You can check the password here if you use a custom auth method
             flash('Login successful!')
             return redirect(url_for('landing_postauth'))
         except Exception as e:
