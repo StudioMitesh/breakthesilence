@@ -1,0 +1,27 @@
+<!-- templates/landing_preauth.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Landing Page (Pre-Auth)</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Gesture Recognition App</h1>
+        <nav>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>Get Started with Gesture Recognition!</h2>
+        <p>This app uses advanced gesture recognition to provide unique interactions.</p>
+        <a href="{{ url_for('login') }}" class="button">Get Started</a>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Gesture Recognition App</p>
+    </footer>
+</body>
+</html>

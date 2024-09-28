@@ -34,6 +34,6 @@ def streamlit_camera(navigate_to):
         mode=WebRtcMode.SENDRECV,
     )
 
-    if st.button("Access the App"):
-        navigate_to('camera')
-        
+    if st.button("Return to Dashboard"):
+        navigate_to('post_login')
+    

@@ -4,25 +4,29 @@ import time
 from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
 
-model_path = './cv/model/gesture_recognizer.task'
+model_path = './model/gesture_recognizer.task'
 base_options = BaseOptions(model_asset_path=model_path)
 
 signal_count = 0
-gestures = ['None']
+past_gesture = ["None"]
 
 with open("./log.txt", "w") as f:
     def print_result(result: GestureRecognizerResult, output_image: mp.Image, timestamp_ms: int):
         global signal_count 
+        if signal_count >= 2:
+            return  # Ignore further processing
+        
         if result.gestures and result.gestures[0]:
             gesture_category = result.gestures[0][0]
             gesture_name = gesture_category.category_name
-
-            # Only log new gestures
-            if gesture_name != 'None' and gestures[-1] != gesture_name:
-                f.write(f'Gesture: {gesture_name}\n')
-                f.write(f'Score: {gesture_category.score}\n\n')
-                gestures.append(gesture_name)
-                signal_count += 1  # Update signal count when a new gesture is recognized
+            # Check if the current gesture is different from the last one
+            if past_gesture[0] != gesture_name:
+                if gesture_name != "None":
+                    f.write(f'Gesture: {gesture_name}\n')
+                    f.write(f'Score: {gesture_category.score}\n\n')
+                    signal_count += 1  # Update signal count when a new gesture is recognized
+                past_gesture[0] = gesture_name
+            print(gesture_name)
 
 
     options = GestureRecognizerOptions(
@@ -58,9 +62,10 @@ with open("./log.txt", "w") as f:
             # Show the frame with OpenCV
             cv2.imshow("Gesture Recognition", frame)
             
-            if signal_count>=2:
+            if signal_count >= 2:
                 print("Detected two gestures.")
                 break
+            
             # Break the loop if 'q' is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -68,4 +73,3 @@ with open("./log.txt", "w") as f:
         # Release the capture and close the window
         cap.release()
         cv2.destroyAllWindows()
-

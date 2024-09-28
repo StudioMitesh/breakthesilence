@@ -1,0 +1,26 @@
+<!-- templates/landing_postauth.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Post-Auth Landing Page</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome, User!</h1>
+        <nav>
+            <a href="{{ url_for('camera') }}">Camera</a>
+            <a href="{{ url_for('llm') }}">LLM Page</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>You're logged in!</h2>
+        <p>Explore the functionality of the gesture recognition application.</p>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Gesture Recognition App</p>
+    </footer>
+</body>
+</html>

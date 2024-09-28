@@ -1,32 +1,39 @@
-import streamlit as st
-from landing_preauth import landing_preauth
-from login import login
-from landing_postauth import landing_postauth
-from streamlit_camera import streamlit_camera
-#from cv.gestureRecognition import gesture_recognition
-from llm import llm
-from test import test
+import subprocess
+from flask import Flask, render_template, request, jsonify
 
-# initialize page state
-if 'current_page' not in st.session_state:
-    st.session_state['current_page'] = 'landing'
+app = Flask(__name__)
 
-# page navigation
-def navigate_to(page):
-    st.session_state['current_page'] = page
+@app.route('/')
+def landing_preauth():
+    return render_template('landing_preauth.html')
 
-# page render selection
-if st.session_state['current_page'] == 'landing':
-    landing_preauth(navigate_to)
-elif st.session_state['current_page'] == 'login':
-    login(navigate_to)
-elif st.session_state['current_page'] == 'post_login':
-    landing_postauth(navigate_to)
-elif st.session_state['current_page'] == 'test':
-    test(navigate_to)
-elif st.session_state['current_page'] == 'camera':
-    streamlit_camera(navigate_to)
-#elif st.session_state['current_page'] == 'gesture_recognition':
- #   gesture_recognition(navigate_to)
-elif st.session_state['current_page'] == 'llm_output':
-    llm(navigate_to)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Handle login logic
+        return render_template('landing_postauth.html')
+    return render_template('login.html')
+
+@app.route('/landing_postauth')
+def landing_postauth():
+    return render_template('landing_postauth.html')
+
+@app.route('/camera')
+def camera():
+    return render_template('camera.html')
+
+@app.route('/llm')
+def llm():
+    return render_template('llm.html')
+
+@app.route('/start_gesture_recognition', methods=['POST'])
+def start_gesture_recognition():
+    try:
+        # Start the gesture recognition script
+        subprocess.Popen(['python', 'gestureRecognition.py'])  # Adjust this path if necessary
+        return jsonify({'status': 'Gesture recognition started'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
