@@ -17,6 +17,7 @@ st.title("Enhanced Camera Stream in Streamlit App")
 webrtc_streamer(
     key="camera",
     video_transformer_factory=VideoTransformer,
+
     media_stream_constraints={
         "video": {
             "width": {"ideal": 1280},   # Set desired width
