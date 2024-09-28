@@ -33,3 +33,7 @@ def streamlit_camera(navigate_to):
         # Set broadcast mode to improve synchronization
         mode=WebRtcMode.SENDRECV,
     )
+
+    if st.button("Access the App"):
+        navigate_to('camera')
+        
