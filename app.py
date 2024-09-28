@@ -12,7 +12,6 @@ if 'current_page' not in st.session_state:
 # page navigation
 def navigate_to(page):
     st.session_state['current_page'] = page
-    st.experimental_rerun()
 
 # page render selection
 if st.session_state['current_page'] == 'landing':
