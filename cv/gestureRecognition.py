@@ -1,5 +1,6 @@
 import mediapipe as mp
 import cv2
+import warnings
 import time
 from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
@@ -8,6 +9,7 @@ import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
+warnings.filterwarnings("ignore")
 cred = credentials.Certificate("hackgt-11-firebase-adminsdk-o5ziq-f4f2cd7c75.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -23,6 +25,7 @@ with open("./log.txt", "w") as f:
     def print_result(result: GestureRecognizerResult, output_image: mp.Image, timestamp_ms: int):
         global signal_count 
         if signal_count >= 2:
+            is_recognizing = False
             return  # Ignore further processing
         
         if result.gestures and result.gestures[0]:

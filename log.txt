@@ -1,0 +1,6 @@
+Gesture: Pointing_Up
+Score: 0.802463948726654
+
+Gesture: Victory
+Score: 0.5666816234588623
+

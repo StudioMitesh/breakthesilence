@@ -10,13 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 video: true
             });
             video.srcObject = stream;
+            video.play();
         } catch (err) {
             console.error("Error accessing camera: ", err);
         }
     }
 
-    // Start gesture recognition on button click
-    startButton.addEventListener('click', function () {
+    async function startRecognition() {
         fetch('/start_gesture_recognition', {
             method: 'POST'
         })
@@ -33,19 +33,23 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => {
             console.error(error);
         });
-    });
+    }
 
-    function fetchGestures() {
+    function fetchLog() {
         $.get('/get_gestures', function(data) {
-            $('#gesture-results').empty();
+            $('#gesture-log').empty();
             data.forEach(function(gesture) {
-                $('#gesture-results').append('<p>' + gesture + '</p>');
+                $('#gesture-log').append('<li>' + gesture + '</li>');
             });
+        }).fail(function(err) {
+            console.error(err);
         });
     }
 
     // Start the video on page load
     startVideo();
-    setInterval(fetchGestures, 5000);
-    fetchGestures();
+    startRecognition();
+    setInterval(fetchLog, 5000);
+    fetchLog();
+
 });

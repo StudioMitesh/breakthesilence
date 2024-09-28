@@ -11,59 +11,11 @@
     <h1>Gesture Recognition</h1>
     <video id="video" width="640" height="480" autoplay></video>
     <div>
-        <button id="start-button">Start Gesture Recognition</button>
-        <button id="stop-button">Stop Gesture Recognition</button>
+        <p>woohoo!</p>
     </div>
     <h2>Gesture Log</h2>
     <ul id="gesture-log"></ul>
 
-    <script>
-        // Start camera feed
-        const video = document.getElementById('video');
-
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({
-                video: true
-            }).then(function(stream) {
-                video.srcObject = stream;
-                video.play();
-            }).catch(function(error) {
-                console.error("Error accessing the camera: ", error);
-            });
-        }
-
-        // Start button functionality
-        $('#start-button').on('click', function() {
-            $.post('/start_gesture_recognition', function(data) {
-                console.log(data.status);
-            }).fail(function(err) {
-                console.error(err);
-            });
-        });
-
-        // Stop button functionality
-        $('#stop-button').on('click', function() {
-            $.post('/stop_gesture_recognition', function(data) {
-                console.log(data.status);
-            }).fail(function(err) {
-                console.error(err);
-            });
-        });
-
-        // Fetch log
-        function fetchLog() {
-            $.get('/get_gestures', function(data) {
-                $('#gesture-log').empty();
-                data.forEach(function(gesture) {
-                    $('#gesture-log').append('<li>' + gesture + '</li>');
-                });
-            }).fail(function(err) {
-                console.error(err);
-            });
-        }
-
-        // Automatically fetch log
-        setInterval(fetchLog, 5000); // Adjust the interval as needed
-    </script>
+    <script src="{{ url_for('static', filename='script.js')}}"></script>
 </body>
 </html>
