@@ -51,25 +51,44 @@ nav#top-buttons a:hover {
 /* Main Page Styles */
 .main-container {
     color: white;
-    text-align: center;
+    text-align: left; /* Align text to the left */
+    margin: 0 auto; /* Center the container itself */
+    width: 80%; /* Optional: limit container width for better centering */
     margin-top: 150px; /* Space between top bar and content */
 }
 
 .main-text {
     font-family: 'Outfit', sans-serif;
-    font-size: 40px;
+    font-size: 50px; /* Use a meaningful font size */
     font-weight: bold;
-    margin: 0 0 20px 0; /* Space below the main text */
+    margin: 0; /* Remove extra margin */
+    margin-bottom: 10px;
 }
 
 .main-descriptor {
     font-family: 'Outfit', sans-serif;
     font-size: 20px;
-    margin: 0 0 40px 0; /* Space between descriptor and button */
+    margin-bottom: 20px;
+}
+
+.logo {
+    display: flex; /* Enable flexbox */
+    justify-content: flex-end; /* Align the content to the right horizontally */
+    margin: 0 auto; /* Center the container itself */
+    margin-top: 20 px; /* Space between top bar and content */
+    margin-bottom: 20px; /* Reduced space between content and bottom */
+    padding-bottom: 20px; /* Reduced padding to move content up */
+}
+
+.logo img {
+    max-width: 200px; /* Set the maximum width */
+    max-height: 200px; /* Set the maximum height */
+    height: auto; /* Maintain aspect ratio */
+    width: auto; /* Maintain aspect ratio */
 }
 
 nav#get-started {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 nav#get-started a {
@@ -80,6 +99,12 @@ nav#get-started a {
     background-color: #007EA7;
     border-radius: 10px;
     display: inline-block;
+    width: 150px;
+    padding-left: 20px; /* Add padding to the left */
+    padding-right: 10px;
+    text-align: left; /* Align text to the left */
+    display: flex; /* Use flexbox for vertical centering */
+    align-items: center; /* Center text vertically */
 }
 
 nav#get-started a:hover {
@@ -103,7 +128,7 @@ nav#get-started a:hover {
 
 .login-container {
     width: 300px; /* Set a fixed width for the form */
-    margin: 100px auto; /* Center the container horizontally and move it down */
+    margin: 10px auto 20px auto; /* Center the container horizontally and move it down */
     background: #003459; /* Same background color */
     padding: 30px;
     border-radius: 10px; /* Rounded corners */
@@ -112,13 +137,20 @@ nav#get-started a:hover {
 }
 
 .login-header h1 {
-    font-size: 30px;
-    margin-bottom: 20px;
+    font-size: 40px;
+    margin-bottom: 50px;
+    margin-top: 20px;
+    text-align: center;
     font-family: 'Outfit', sans-serif;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    font-size: 20px;
+    margin-bottom: 40px;
+    font-family: 'Outfit', sans-serif;
+    text-align: left;
+
+
 }
 
 input[type="text"],
@@ -137,7 +169,8 @@ input[type="password"] {
     background-color: #007EA7;
     border: none;
     border-radius: 5px;
-    font-size: 18px;
+    text-align: center
+    font-size 18px;
     cursor: pointer;
 }
 
@@ -172,13 +205,15 @@ input[type="password"] {
 .post-auth-container {
     text-align: center; /* Center all text inside this container */
     color: white;
+    font-size: 18px;
+    font-family: 'New Amsterdam', sans-serif; /* Use New Amsterdam font */
     margin-top: 100px; /* Space between top bar and content */
 }
 
 .welcome-message h1 {
     font-size: 28px;
     margin-bottom: 40px; /* Space between welcome message and buttons */
-    font-family: 'New Amsterdam'; /* Use New Amsterdam font */
+    font-family: 'Outfit', sans-serif;
 }
 
 .button-container {
@@ -189,7 +224,6 @@ input[type="password"] {
     margin-top: 20px;
 }
 
-
 .button-container .button {
     padding: 15px 30px; /* Increase padding for bigger buttons */
     background: #007EA7;
@@ -197,12 +231,34 @@ input[type="password"] {
     border-radius: 10px;
     color: white;
     font-size: 18px;
-    font-family: 'New Amsterdam', sans-serif; /* Use New Amsterdam font */
+    font-family: 'Outfit'; /* Use New Amsterdam font */
     margin: 10px;
     display: inline-block;
     transition: background-color 0.3s ease; /* Smooth hover effect */
 }
-
+.button-container .button-camera{
+    padding: 15px 30px; /* Increase padding for bigger buttons */
+    background: #007EA7;
+    text-decoration: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    font-family: 'Outfit'; /* Use New Amsterdam font */
+    margin: 10px;
+    display: inline-block;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+.button-container .submit {
+    padding: 15px 30px; /* Increase padding for bigger buttons */
+    background: #007EA7;
+    text-decoration: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    font-family: 'Outfit'; /* Use New Amsterdam font */
+    margin: 10px;
+    display: inline-block;
+}
 
 .button-container .button:hover {
     background-color: #0056b3;
@@ -210,18 +266,19 @@ input[type="password"] {
 
 /* Profile Page Styles - Match with Login Page */
 .login-container {
+    font-family: 'Outfit';
     width: 50%; /* Adjust as needed for the container width */
-    margin: 150px auto; /* Center horizontally and add top space */
     background: #003459; /* Same background as login */
     padding: 30px;
     border-radius: 10px; /* Rounded corners */
     text-align: center; /* Center the text */
     color: white;
+    margin-bottom: 50px;
 }
 
 /* Style the label for the text box */
 .text-box-label {
-    font-family: 'New Amsterdam', sans-serif;
+    font-family: 'Outfit', sans-serif;
     font-size: 28px;
     color: white;
     margin-bottom: 20px; /* Space between label and text box */
@@ -261,3 +318,5 @@ input[type="password"] {
 .button:hover {
     background-color: #0056b3;
 }
+
+

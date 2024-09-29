@@ -3,22 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera</title>
-    <link rel="stylesheet" href="style.css"> <!-- Add your CSS file -->
+    <title>Gesture Recognition</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-    <h1>Gesture Recognition</h1>
-    <video id="video" width="640" height="480" autoplay></video>
-    <div>
-        <p>woohoo!</p>
+    <div class="container">
+        <!-- Camera Section -->
+        <div class="camera-section">
+            <h1>Gesture Recognition</h1>
+            <video id="video" width="640" height="480" autoplay></video>
+            <!-- Add the stop button -->
+            <button id="stop-button">Stop</button>
+            <h2>Gesture Log</h2>
+            <ul id="gesture-log"></ul>
+            <button id="record">Record</button>
+        </div>
+        
+        <!-- Gesture Guide Section -->
+        <div class="gesture-guide">
+            <!-- Table 1 -->
+            <table>
+                <thead>
+                    <tr><th>Gesture</th><th>Meaning</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Pointed Finger</td><td>Need Clarity</td></tr>
+                    <tr><td>Open Hand</td><td>Repeat Please</td></tr>
+                    <tr><td>Closed Hand</td><td>Need Time</td></tr>
+                    <tr><td>Thumbs Up</td><td>Thanks</td></tr>
+                    <tr><td>Thumbs Down</td><td>Unsure</td></tr>
+                    <tr><td>Pointed Finger</td><td>End Talk</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Table 2 -->
+            <table>
+                <thead>
+                    <tr><th>Gesture</th><th>Meaning</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Thumbs Down</td><td>Negative</td></tr>
+                    <tr><td>Open Hand</td><td>Disagree, Ask</td></tr>
+                    <tr><td>Closed Hand</td><td>Disagree</td></tr>
+                    <tr><td>Thumbs Up</td><td>Strong Disagree</td></tr>
+                    <tr><td>Thumbs Down</td><td>Unsure Disagree</td></tr>
+                    <tr><td>Pointed Finger</td><td>Reiterate</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Table 3 -->
+            <table>
+                <thead>
+                    <tr><th>Gesture</th><th>Meaning</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Thumbs Up</td><td>Affirm</td></tr>
+                    <tr><td>Open Hand</td><td>Answer, Ask</td></tr>
+                    <tr><td>Closed Hand</td><td>Affirm Answer</td></tr>
+                    <tr><td>Thumbs Up</td><td>Strong Agree</td></tr>
+                    <tr><td>Thumbs Down</td><td>Unsure Agree</td></tr>
+                    <tr><td>Pointed Finger</td><td>Reiterate</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Table 4 -->
+            <table>
+                <thead>
+                    <tr><th>Gesture</th><th>Meaning</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Closed Hand</td><td>Medical Issue</td></tr>
+                    <tr><td>Open Hand</td><td>Less Pain</td></tr>
+                    <tr><td>Closed Hand</td><td>More Pain</td></tr>
+                    <tr><td>Thumbs Up</td><td>No Doctor</td></tr>
+                    <tr><td>Thumbs Down</td><td>Need Doctor</td></tr>
+                    <tr><td>Pointed Finger</td><td>Reiterate</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Table 5 -->
+            <table>
+                <thead>
+                    <tr><th>Gesture</th><th>Meaning</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Open Hand</td><td>Needs/Requests</td></tr>
+                    <tr><td>Open Hand</td><td>Hungry</td></tr>
+                    <tr><td>Closed Hand</td><td>Thirsty</td></tr>
+                    <tr><td>Thumbs Up</td><td>Activity Options</td></tr>
+                    <tr><td>Thumbs Down</td><td>Need Help</td></tr>
+                    <tr><td>Pointed Finger</td><td>Reiterate Emphasis</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <h2>Gesture Log</h2>
-    <ul id="gesture-log"></ul>
-    <!-- Add the stop button -->
-    <button id="stop-button">Stop</button>
 
     <script src="{{ url_for('static', filename='script.js')}}"></script>
 </body>
-
 </html>

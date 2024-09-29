@@ -1,6 +1,8 @@
 <!-- templates/profile.html -->
 <!DOCTYPE html>
 <html lang="en">
+<link href="https://fonts.googleapis.com/css2?family=New+Amsterdam:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +14,7 @@
         <header>
             <h1><a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a></h1>
             <nav id="top-buttons">  <!-- Make sure to use id 'top-buttons' -->
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
+                <a href="{{ url_for('landing_postauth') }}">Camera</a>
                 <a href="{{ url_for('profile') }}">Profile</a>
             </nav>
         </header>
@@ -27,7 +28,9 @@
             <!-- Large text box for input -->
             <textarea id="about-you" name="about_you" class="text-box" placeholder="Write about yourself..."></textarea>
             <!-- Submit button -->
-            <input type="submit" value="Submit" class="button">
+            <div class = "button-container">
+                <input type="submit" value="Submit" class="submit">
+            </div>
         </form>
     </div>
     
