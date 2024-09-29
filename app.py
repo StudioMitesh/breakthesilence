@@ -164,6 +164,104 @@ def camera():
 def llm():
     return render_template('llm.html')
 
+@app.route('/start_audio_recording', methods=['POST'])
+def start_recording():
+    global is_recording
+    is_recording = True
+    print("Starting audio recording...")
+
+    # Audio configuration
+    FORMAT = pyaudio.paInt16
+    CHANNELS = 1
+    RATE = 16000
+    frame_duration_ms = 30
+    frame_duration_seconds = frame_duration_ms / 1000
+    CHUNK = int(RATE * frame_duration_seconds)
+
+    # Initialize PyAudio
+    audio = pyaudio.PyAudio()
+
+    # Open stream
+    stream = audio.open(format=FORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK)
+
+    # Initialize VAD
+    vad = webrtcvad.Vad()
+    vad.set_mode(3)  # 0: Very aggressive, 3: Less aggressive
+
+    # Start recording in a separate thread
+    threading.Thread(target=record_audio, args=(vad, stream, audio, CHUNK, RATE, frame_duration_seconds)).start()
+    return jsonify({'status': 'Audio recording started'}), 200
+
+def is_speech(frame, sample_rate, vad):
+    return vad.is_speech(frame, sample_rate)
+
+def record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds):
+    global is_recording
+    print("Listening for speech...")
+    audio_segments = []
+    current_segment = []
+    silence_frame_count = 0
+    silence_duration = 2.5
+
+    try:
+        while is_recording:
+            frame = stream.read(CHUNK, exception_on_overflow=False)
+            if is_speech(frame, RATE, vad):
+                print("Speech detected...")
+                current_segment.append(frame)
+                silence_frame_count = 0
+            else:
+                silence_frame_count += 1
+                if current_segment and silence_frame_count > (silence_duration / frame_duration_seconds):
+                    print("Silence detected, saving current segment...")
+                    save_audio_wav(audio, current_segment, f"output.wav")
+                    convert_wav_to_mp3(f"output.wav", f"output.mp3")
+                    os.remove(f"output.wav")
+                    current_segment = []
+                    silence_frame_count = 0
+                    # Use application context for the following call
+                    with app.app_context():
+                        stop_audio_recognition()
+                    break
+
+    except Exception as e:
+        print(f"Error while processing frame: {e}")
+
+    finally:
+        stream.stop_stream()
+        stream.close()
+        audio.terminate()
+def save_audio_wav(audio, frames, filename="output.wav"):
+    """Save the recorded audio as a WAV file."""
+    if frames:  # Ensure there are frames to save
+        wf = wave.open(filename, 'wb')
+        wf.setnchannels(1)  # Mono
+        wf.setsampwidth(audio.get_sample_size(pyaudio.paInt16))
+        wf.setframerate(16000)
+        wf.writeframes(b''.join(frames))
+        wf.close()
+        print(f"Audio saved as {filename}")
+    else:
+        print("No frames to save.")
+
+
+def convert_wav_to_mp3(wav_filename, mp3_filename):
+    sound = AudioSegment.from_wav(wav_filename)
+    sound.export(mp3_filename, format="mp3")
+    print(f"Converted {wav_filename} to {mp3_filename}")
+
+
+@app.route('/stop_audio_recording', methods=['POST'])
+def stop_audio_recognition():
+    global is_recording
+    is_recording = False
+    return jsonify({'status': 'Audio recording stopped'}), 200
+
+
 @app.route('/start_gesture_recognition', methods=['POST'])
 def start_gesture_recognition():
     global gesture_names
