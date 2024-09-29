@@ -7,7 +7,7 @@ from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
-from geminilangchain import user_call, send_message
+from geminilangchain import user_call, send_message, text_to_speech, flow
 from dotenv import load_dotenv
 import os
 
@@ -37,14 +37,18 @@ signal_count = 0
 past_gesture = ["None"]
 log_output = []
 gesture_names = []
-dct = {"None": 0, "Open_Palm": 1, "Closed_Fist": 2, "Thumbs_Up": 3, "Thumbs_Down": 4, "Pointing_Up": 5}
+running = True
+curr_sequence = []
+dct = {"None": 0, "Open_Palm": 1, "Closed_Fist": 2, "Thumb_Up": 3, "Thumb_Down": 4, "Pointing_Up": 5}
 
 
 def print_result(result: GestureRecognizerResult, output_image: mp.Image, timestamp_ms: int):
     global signal_count
     global gesture_names
+    global is_recognizing
     if signal_count >= 2:
-        return  # Ignore further processing
+        is_recognizing = False
+        return
     if result.gestures and result.gestures[0]:
         gesture_category = result.gestures[0][0]
         gesture_name = gesture_category.category_name
@@ -163,34 +167,37 @@ def llm():
 @app.route('/start_gesture_recognition', methods=['POST'])
 def start_gesture_recognition():
     global gesture_names
+    global signal_count
+    global running
+    global curr_sequence
     print("start button clicked")
     open('./log.txt', 'w').close()
     gesture_names = []
+    signal_count = 0
     global is_recognizing
     is_recognizing = True
-    if is_recognizing:
+    while running:
         threading.Thread(target=run_gesture_recognition).start()
+        if curr_sequence == [5,5]:
+            running = False
+            return jsonify({'status': 'Gesture recognition just ended'}), 200
         return jsonify({'status': 'Gesture recognition started'}), 200
-    else:
-        return jsonify({'status': 'Gesture recognition is already running'}), 400
 
 @app.route('/stop_gesture_recognition', methods=['POST'])
 def stop_gesture_recognition():
     print("stop button clicked")
     global is_recognizing
+    is_recognizing = False
     #open("./log.txt", "w").close()
-    if not is_recognizing:
-        return jsonify({'status': 'Gesture recognition stopped'}), 200
-    else:
-        return jsonify({'status': 'Gesture recognition is not running'}), 400
+    return jsonify({'status': 'Gesture recognition stopped'}), 200
 
 def run_gesture_recognition():
     print("gesture recognition running")
     global is_recognizing
     gesture_recognition_function()
     if not is_recognizing:
-        get_gestures()
-        with app.test_request_context():
+        print("processing gestures")
+        with app.app_context():
             process_gestures()
         stop_gesture_recognition()
 
@@ -213,23 +220,26 @@ def get_gestures():
 @app.route('/process_gestures', methods=['POST'])
 def process_gestures():
     global gesture_names
+    global curr_sequence
     if len(gesture_names) < 2:
+        print("not enough gestures")
         return jsonify({'error': 'Not enough gestures recognized'}), 400
     
     sequence = [dct[name] for name in gesture_names if name in dct]
+    print(sequence)
 
     if len(sequence) != 2:
+        print("more than two gestures")
         return jsonify({'error': 'Expected exactly two gestures'}), 400
-
-    designation = f"{sequence[0]} {sequence[1]}"
-    response = geminilangchain_llm_call(designation)
-
+    print("gemini response")
+    response = geminilangchain_llm_call(sequence)
+    text_to_speech(response)
+    curr_sequence = sequence
     return jsonify({'response': response}), 200
 
 def geminilangchain_llm_call(designation):
     prompt = user_call(designation)
-    
-    response = send_message(app, prompt)
+    response = send_message(flow, prompt)
     return response
 
 

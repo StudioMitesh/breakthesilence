@@ -43,7 +43,6 @@ chain = gen_prompt | llm_model | output_parser
 
 #Calling model chain
 def call_llm(state: MessagesState):
-    print("cool")
     human_messages = [msg.content for msg in state["messages"] if isinstance(msg, HumanMessage)]
     user_input = human_messages[-1] if human_messages else ""
 
@@ -59,15 +58,15 @@ workflow.add_edge(START, "llm_model")
 
 #in-memory checkpointer
 memory = MemorySaver()
-app = workflow.compile(checkpointer=memory)
+flow = workflow.compile(checkpointer=memory)
 
 #send message to app
-def send_message(app, user_content, thread_id="1"):
+def send_message(flow, user_content, thread_id="1"):
     # Create the HumanMessage
     human_message = HumanMessage(content=user_content)
     
     # Invoke the app
-    out = app.invoke(
+    out = flow.invoke(
         {"messages": [human_message]},
         config={"configurable": {"thread_id": thread_id}},
     )
@@ -184,16 +183,16 @@ time.sleep(1)
 text_to_speech(response3)
 
 '''
-prompt = user_call([1,2])
+'''prompt = user_call([1,2])
 response = send_message(app, prompt)
 print("AI Response:", response)
-
+'''
 def text_to_speech(text, lang='en'):
     tts = gTTS(text=text, lang=lang, slow=False)
     tts.save("response.mp3")
     os.system("afplay response.mp3")
 
-text_to_speech(response)
+#text_to_speech(response)
 
 
 
