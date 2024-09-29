@@ -1,9 +1,7 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
+from flask import Flask
+from firebase_functions import https_fn
+import app as app
 
-# Initialize Firebase Admin SDK
-cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
-firebase_admin.initialize_app(cred)
-
-# Firestore DB instance
-db = firestore.client()
+@https_fn.on_request
+def flasking(request):
+    return app.app(request)

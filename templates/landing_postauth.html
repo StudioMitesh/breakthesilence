@@ -8,19 +8,25 @@
     <title>Post-Auth Landing Page</title>
 </head>
 <body>
-    <header>
-        <h1>Welcome, User!</h1>
-        <nav>
-            <a href="{{ url_for('camera') }}">Camera</a>
-            <a href="{{ url_for('llm') }}">LLM Page</a>
-        </nav>
-    </header>
-    <div class="container">
-        <h2>You're logged in!</h2>
-        <p>Explore the functionality of the gesture recognition application.</p>
+    <div class="top-bar">
+        <header>
+            <!-- Link "Break the Silence" to the main page (replace 'landing_preauth' with your main route name) -->
+            <a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a>
+        </header>
     </div>
+    
+    <div class="post-auth-container">
+        <div class="welcome-message">
+            <h1>Welcome, User! You're logged in!</h1>
+        </div>
+        <div class="button-container">
+            <a href="{{ url_for('camera') }}" class="button">Camera</a>
+            <a href="{{ url_for('llm') }}" class="button">LLM Page</a>
+        </div>
+    </div>
+
     <footer class="footer">
-        <p>&copy; 2024 Gesture Recognition App</p>
+        <p>&copy; 2024 Break the Silence</p>
     </footer>
 </body>
 </html>

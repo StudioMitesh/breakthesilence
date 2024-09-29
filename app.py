@@ -7,13 +7,29 @@ from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
+from geminilangchain import user_call, send_message
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # Firebase setup
-# cred = credentials.Certificate("/Users/mites/Documents/HackGT11/hackgt-11-firebase-adminsdk-o5ziq-f4f2cd7c75.json")
-# firebase_admin.initialize_app(cred)
-# db = firestore.client()
+cred = credentials.Certificate(
+    {"type": os.getenv("FIREBASE_TYPE"),
+    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace("\\n", "\n"),
+    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+    "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
+    "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
+    "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
+    "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
+    "universe_domain": os.getenv("FIREBASE_DOMAIN")})
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 # Global variables for gesture recognition
 is_recognizing = False
@@ -21,6 +37,7 @@ signal_count = 0
 past_gesture = ["None"]
 log_output = []
 gesture_names = []
+dct = {"None": 0, "Open_Palm": 1, "Closed_Fist": 2, "Thumbs_Up": 3, "Thumbs_Down": 4, "Pointing_Up": 5}
 
 
 def print_result(result: GestureRecognizerResult, output_image: mp.Image, timestamp_ms: int):
@@ -168,11 +185,13 @@ def stop_gesture_recognition():
         return jsonify({'status': 'Gesture recognition is not running'}), 400
 
 def run_gesture_recognition():
-    print("gesture recognition runnning")
+    print("gesture recognition running")
     global is_recognizing
     gesture_recognition_function()
     if not is_recognizing:
         get_gestures()
+        with app.test_request_context():
+            process_gestures()
         stop_gesture_recognition()
 
 @app.route('/get_gestures', methods=['GET'])
@@ -190,6 +209,29 @@ def get_gestures():
         '''
 
     return jsonify(gestures_list)
+
+@app.route('/process_gestures', methods=['POST'])
+def process_gestures():
+    global gesture_names
+    if len(gesture_names) < 2:
+        return jsonify({'error': 'Not enough gestures recognized'}), 400
+    
+    sequence = [dct[name] for name in gesture_names if name in dct]
+
+    if len(sequence) != 2:
+        return jsonify({'error': 'Expected exactly two gestures'}), 400
+
+    designation = f"{sequence[0]} {sequence[1]}"
+    response = geminilangchain_llm_call(designation)
+
+    return jsonify({'response': response}), 200
+
+def geminilangchain_llm_call(designation):
+    prompt = user_call(designation)
+    
+    response = send_message(app, prompt)
+    return response
+
 
 
 if __name__ == '__main__':
