@@ -24,7 +24,7 @@ A transformative platform designed to empower non-verbal children, students, and
 
 ## 💡 How It Works
 1. **Gesture Recognition**: The platform uses the user's webcam to capture gestures, which are processed and recognized by the MediaPipe computer vision library.
-2. **Context Building**: Leveraging LangChain and OpenAI's API, the system builds context based on the gesture, user profile, and ongoing interactions.
+2. **Context Building**: Leveraging LangChain and Gemini's API, the system builds context based on the gesture, user profile, and ongoing interactions.
 3. **Audio Generation**: Once the gesture is understood, a relevant and context-aware audio response is generated and played back to the user.
 
 ## 📁 Repository Structure
@@ -46,7 +46,7 @@ Here's a breakdown of the main folders and files in the repository:
     ```bash
     pip install -r requirements.txt
     ```
-3. **Set up Firebase and API keys**: Configure `.env` file with your Firebase credentials and OpenAI API key.
+3. **Set up Firebase and API keys**: Configure `.env` file with your Firebase credentials and Gemini API key.
 4. **Run the app**:
     ```bash
     python app.py
