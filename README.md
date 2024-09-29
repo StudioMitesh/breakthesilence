@@ -40,7 +40,7 @@ Here's a breakdown of the main folders and files in the repository:
 ## 🛠️ Installation & Setup
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/YourUsername/break-the-silence.git
+    git clone https://github.com/StudioMitesh/break-the-silence.git
     ```
 2. **Install dependencies**:
     ```bash
