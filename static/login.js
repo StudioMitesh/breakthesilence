@@ -11,7 +11,6 @@ const firebaseConfig = {
     measurementId: "G-PGZQ5XLE8M"
 };
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 function login() {
     const email = document.getElementById('email').value;
@@ -20,10 +19,9 @@ function login() {
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
             // Signed in 
-            window.location.href = "/landing_postauth"; // Redirect on success
+            window.location.href = "{{ url_for('landing_postauth') }}"; // Redirect on success
         })
         .catch((error) => {
-            const errorCode = error.code;
             const errorMessage = error.message;
             alert("Error: " + errorMessage);
         });

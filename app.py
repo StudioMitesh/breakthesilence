@@ -32,8 +32,9 @@ cred = credentials.Certificate(
     "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
     "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
     "universe_domain": os.getenv("FIREBASE_DOMAIN")})
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred, {'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")})
 db = firestore.client()
+bucket = firebase_admin.storage.bucket()
 
 # Global variables for gesture recognition
 is_recognizing = False
@@ -136,27 +137,47 @@ def landing_preauth():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+
         try:
-            user = auth.get_user_by_email(email)
-            flash('Login successful!')
-            return redirect(url_for('landing_postauth'))
+            user = auth.get_user_by_email(name)
+            if user and user.password == password: #TODO: check password and fix the firebase auth
+                return redirect(url_for('landing_postauth'))
+            else:
+                flash('Invalid username or password')
         except Exception as e:
-            flash(str(e))
+            flash('Error: {}'.format(e))
+
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+
         try:
-            user = auth.create_user(email=email, password=password)
-            flash('User created successfully!')
+            user = auth.create_user(
+                name=name,
+                email=email,
+                password=password
+            )
+            
+            db.collection('users').document(user.uid).set({
+            'name': name,
+            'email': email,
+            'gestureData': [],
+            'profileFile': None  # Will be linked later
+        })
+            flash('Registration successful! You can now log in.')
+
             return redirect(url_for('login'))
         except Exception as e:
-            flash(str(e))
+            flash('Error: {}'.format(e))
+
     return render_template('register.html')
 
 @app.route('/landing_postauth')

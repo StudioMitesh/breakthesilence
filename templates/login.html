@@ -3,11 +3,16 @@
 <html lang="en">
 <link href="https://fonts.googleapis.com/css2?family=New+Amsterdam:wght@400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Login Page</title>
+    <script src="{{ url_for('static', filename='login.js') }}"></script>
+    
 </head>
 <body>
     <div class="top-bar">
@@ -24,7 +29,7 @@
         <div class="login-header">
             <h1>Login</h1>
         </div>
-        <form action="{{ url_for('landing_postauth') }}" method="post">
+        <form action="{{ url_for('landing_postauth') }}" method="post" onsubmit="event.preventDefault(); login();">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required><br>
