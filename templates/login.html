@@ -10,29 +10,34 @@
     <title>Login Page</title>
 </head>
 <body>
-    <div class = "top-bar">
+    <div class="top-bar">
         <header>
             <h1>Break the Silence</h1>
-            <nav id="top-buttons">  <!-- Make sure to use id 'top-buttons' -->
+            <nav id="top-buttons"> <!-- Make sure to use id 'top-buttons' -->
                 <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
             </nav>
         </header>
     </div>
-    <header>
-        <div class = "login-header">
+    
+    <div class="login-container">
+        <div class="login-header">
             <h1>Login</h1>
         </div>
-    </header>
-    <div class="container">
         <form action="{{ url_for('landing_postauth') }}" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br>
-            <input type="submit" value="Login" class="get-started">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required><br>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br>
+            </div>
+            <input type="submit" value="Login" class="button">
         </form>
+        <a href="#" class="forgot-password">Forgot Password?</a>
     </div>
+
     <footer class="footer">
         <p>&copy; 2024 Gesture Recognition App</p>
     </footer>
