@@ -14,27 +14,25 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 function login() {
-    document.getElementById('login-form').addEventListener('submit', function(event) {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-        firebase.auth().signInWithEmailAndPassword(email, password)
-        fetch('/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `email=${email}&password=${password}`
-          })
-          .then(response => response.json())
-          .then(data => {
-            // Redirect to authenticated page
-            window.location.href = '/landing_postauth';
-          })
-        .catch((error) => {
-            const errorMessage = error.message;
-            alert("Error: " + errorMessage);
-        });
+    firebase.auth().signInWithEmailAndPassword(email, password)
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${email}&password=${password}`
+        })
+        .then(response => response.json())
+        .then(data => {
+        // Redirect to authenticated page
+        window.location.href = '/landing_postauth';
+        })
+    .catch((error) => {
+        const errorMessage = error.message;
+        alert("Error: " + errorMessage);
     });
 }
 
@@ -77,6 +75,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('register-form').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the form from submitting
         register(); // Call the register function
+    });
+});
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting
+        login(); // Call the login function
     });
 });
 

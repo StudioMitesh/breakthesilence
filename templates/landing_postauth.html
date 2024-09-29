@@ -1,6 +1,8 @@
 <!-- templates/landing_postauth.html -->
 <!DOCTYPE html>
 <html lang="en">
+<link href="https://fonts.googleapis.com/css2?family=New+Amsterdam:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +10,14 @@
     <title>Post-Auth Landing Page</title>
 </head>
 <body>
+    <!-- Top Bar with consistent styling -->
     <div class="top-bar">
         <header>
-            <!-- Link "Break the Silence" to the main page (replace 'landing_preauth' with your main route name) -->
-            <a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a>
+            <h1><a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a></h1>
+            <nav id="top-buttons">  
+                <a href="{{ url_for('camera') }}">Camera</a>
+                <a href="{{ url_for('profile') }}">Profile</a>
+            </nav>
         </header>
     </div>
     
@@ -20,8 +26,7 @@
             <h1>Welcome, User! You're logged in!</h1>
         </div>
         <div class="button-container">
-            <a href="{{ url_for('camera') }}" class="button">Camera</a>
-            <a href="{{ url_for('llm') }}" class="button">LLM Page</a>
+            <a href="{{ url_for('camera') }}" class="button-camera">Camera</a>
         </div>
     </div>
 

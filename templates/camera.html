@@ -1,20 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=New+Amsterdam:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camera</title>
-    <link rel="stylesheet" href="style.css"> <!-- Add your CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
+
 <body>
-    <h1>Gesture Recognition</h1>
-    <video id="video" width="640" height="480" autoplay></video>
-    <div>
-        <p>woohoo!</p>
+    <div class="top-bar">
+        <header>
+            <h1><a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a></h1>
+            <nav id="top-buttons">  
+                <a href="{{ url_for('profile') }}">Profile</a>
+            </nav>
+        </header>
     </div>
-    <h2>Gesture Log</h2>
-    <ul id="gesture-log"></ul>
+
+    <div class="container">
+        <!-- Live Gesture Recognition Title -->
+        <h1 class="title">Live Gesture Recognition</h1>
+        <div class="content">
+            <!-- Video Section -->
+            <div class="video-section">
+                <video id="video" width="640" height="480" autoplay></video>
+                <h2>Gestures Recognized</h2>
+                <ul id="gesture-log"></ul>
+                <!-- Record Button -->
+                <div class="button-container">
+                    <button id="record">Record</button>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section table">
+                <img src="{{ url_for('static', filename='Table.png') }}" alt="Gesture Table">
+            </div>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='script.js')}}"></script>
 </body>

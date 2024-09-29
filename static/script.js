@@ -1,12 +1,13 @@
-// static/js/script.js
 document.addEventListener("DOMContentLoaded", function () {
     const video = document.getElementById('video');
-    const startButton = document.getElementById('start');
+    const recordButton = document.getElementById('record');
+
+    let stream; // Store the video stream so we can stop it later
 
     // Start the video stream
     async function startVideo() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
+            stream = await navigator.mediaDevices.getUserMedia({
                 video: true
             });
             video.srcObject = stream;
@@ -14,26 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (err) {
             console.error("Error accessing camera: ", err);
         }
-    }
-
-    // Start audio recognition
-    async function startAudio(){
-        fetch('/start_audio_recording', {
-            method: 'POST'
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();  // Handling JSON response
-            } else {
-                throw new Error('Failed to start audio recognition');
-            }
-        })
-        .then(data => {
-            console.log(data.status); // Display success message
-        })
-        .catch(error => {
-            console.error(error);
-        });
     }
 
     async function startRecognition() {
@@ -66,20 +47,32 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Start all processes concurrently
-    function startProcesses() {
-        // Start video, audio, and gesture recognition concurrently
-        startVideo(); // Video runs separately and doesn't depend on audio or gesture
-        Promise.all([startAudio(), startRecognition()])
-        .then(() => {
-            console.log("Both audio and gesture recognition started successfully.");
+     // Start audio recognition
+     function startAudio(){
+        fetch('/start_audio_recording', {
+            method: 'POST'
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();  // Handling JSON response
+            } else {
+                throw new Error('Failed to start audio recognition');
+            }
+        })
+        .then(data => {
+            console.log(data.status); // Display success message
         })
         .catch(error => {
-            console.error("Error in starting processes: ", error);
+            console.error(error);
         });
     }
-    startProcesses();
 
-    // Refresh gesture log every 5 seconds
+    // Add event listener to stop button
+    recordButton.addEventListener('click', startAudio);
+
+    // Start the video on page load
+    startVideo();
+    startRecognition();
     setInterval(fetchLog, 5000);
+    fetchLog();
 });

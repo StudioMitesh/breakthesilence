@@ -102,8 +102,10 @@ flow = workflow.compile(checkpointer=memory)
 audio_model = whisper.load_model("base")
 question = "What is the meaning of life?"
 def speech_to_text(audio_file):
+    global question
     audio_result = audio_model.transcribe(audio_file)
-    question = audio_result
+    print(audio_result)
+    question = audio_result['text']
 
 
 #send message to app
@@ -132,7 +134,7 @@ def send_message(flow, user_content, thread_id="1"):
 #response = send_message(app, "What did I just say?", thread_id="1")
 #print("AI Response:", response)
 
-question = "Do you like dogs"
+#question = "Do you like dogs"
 
 def user_call(sequence) -> str:
     additional_prompt = ""
@@ -173,9 +175,9 @@ def user_call(sequence) -> str:
         elif (sequence[1] == 2):
             task = f"Answer the {question} in an affirming way."
         elif (sequence[1] == 3):
-            task = "Agree strongly"
+            task = f"Agree strongly with {question}"
         elif (sequence[1] == 4):
-            task = "Agree but not with much confidence"
+            task = f"Agree but not with much confidence to the {question}"
         elif (sequence[1] == 5):
             task = "Reiterate previous statement with emphasis using the message history, this should not be a generic emphasis, and should not be just a restatement of the previous"
         return task
@@ -186,9 +188,9 @@ def user_call(sequence) -> str:
         elif (sequence[1] == 2):
             task = f"Answer the {question} in an disaffirming way."
         elif (sequence[1] == 3):
-            task = "Disagree strongly"
+            task = f"Disagree strongly with {question}"
         elif (sequence[1] == 4):
-            task = "Disagree but not with much confidence"
+            task = f"Disagree but not with much confidence to the {question}"
         elif (sequence[1] == 5):
             task = "Reiterate previous statement with emphasis using the message history, this should not be a generic emphasis, and should not be just a restatement of the previous"
         return task
@@ -257,4 +259,3 @@ def text_to_speech(text, lang='en'):
     }
 ):
     print(text, flush=True)'''
-

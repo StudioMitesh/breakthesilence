@@ -149,8 +149,8 @@ nav#get-started a:hover {
     margin-bottom: 40px;
     font-family: 'Outfit', sans-serif;
     text-align: left;
-
-
+    color: white;
+    margin-left: 10px;
 }
 
 input[type="text"],
@@ -260,8 +260,45 @@ input[type="password"] {
     display: inline-block;
 }
 
+.button-container .register-button {
+    padding: 15px 30px; /* Increase padding for bigger buttons */
+    background: #007EA7;
+    text-decoration: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    font-family: 'Outfit'; /* Use New Amsterdam font */
+    margin: 10px;
+    width: 100%;
+    display: inline-block;
+}
+
+
+
 .button-container .button:hover {
     background-color: #0056b3;
+}
+
+#record {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between buttons */
+    flex-wrap: wrap; /* Allow buttons to stack on small screens */
+    margin-top: 20px;
+    padding: 15px 30px; /* Increase padding for bigger buttons */
+    background: #007EA7;
+    text-decoration: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    font-family: 'Outfit'; /* Use New Amsterdam font */
+    margin: 10px;
+    display: inline-block;
+}
+
+/* Hover effect */
+#record:hover {
+    background-color: #0056b3; /* Darker green on hover */
 }
 
 /* Profile Page Styles - Match with Login Page */
@@ -319,3 +356,53 @@ input[type="password"] {
     background-color: #0056b3;
 }
 
+.gesture-recognition{
+    color: white;
+    margin-left: 20px;
+    display: flex;
+    width: 50%;
+}
+
+
+.table{
+    display: inline-block;
+    flex: 1;
+    border: 2px;
+    margin: 5px;
+}
+
+.table img {
+    width: 100%; /* Makes the image take the full width of the container */
+    height: auto; /* Maintains the aspect ratio */
+    max-width: 750px; /* You can still limit the maximum size if needed */
+    margin-right: 20px; /* Keep margin for spacing */
+}
+
+.content {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    color: white;
+}
+
+/* Video Section */
+.video-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 20px;
+}
+
+
+/* Table Section */
+.table-section img {
+    width: auto;
+    height: 470px;
+}
+
+.title {
+    color: white;
+    margin-left: 70px;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
