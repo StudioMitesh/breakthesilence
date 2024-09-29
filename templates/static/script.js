@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const video = document.getElementById('video');
     const startButton = document.getElementById('start');
-
+    const conversation = True
     // Start the video stream
     async function startVideo() {
         try {
@@ -16,6 +16,24 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    async function startAudio(){
+        fetch('/start_audio_recognition', {
+            method: 'POST'
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.mp3();
+            } else {
+                throw new Error('Failed to start gesture recognition');
+            }
+        })
+        .then(data => {
+            console.log(data.status); // Display success message
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
     async function startRecognition() {
         fetch('/start_gesture_recognition', {
             method: 'POST'
@@ -49,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Start the video on page load
     startVideo();
     startRecognition();
+    startAudio();
     setInterval(fetchLog, 5000);
     fetchLog();
 
