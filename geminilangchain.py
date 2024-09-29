@@ -102,8 +102,10 @@ flow = workflow.compile(checkpointer=memory)
 audio_model = whisper.load_model("base")
 question = "What is the meaning of life?"
 def speech_to_text(audio_file):
+    global question
     audio_result = audio_model.transcribe(audio_file)
-    question = audio_result
+    print(audio_result)
+    question = audio_result['text']
 
 
 #send message to app
@@ -132,7 +134,7 @@ def send_message(flow, user_content, thread_id="1"):
 #response = send_message(app, "What did I just say?", thread_id="1")
 #print("AI Response:", response)
 
-question = "Do you like dogs"
+#question = "Do you like dogs"
 
 def user_call(sequence) -> str:
     additional_prompt = ""
