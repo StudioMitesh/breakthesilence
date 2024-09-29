@@ -1,34 +1,36 @@
-<!-- templates/landing_postauth.html -->
+<!-- templates/profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Post-Auth Landing Page</title>
+    <title>Profile</title>
 </head>
 <body>
-    <!-- Top Bar with consistent styling -->
     <div class="top-bar">
         <header>
             <h1><a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a></h1>
-            <nav id="top-buttons">  
+            <nav id="top-buttons">  <!-- Make sure to use id 'top-buttons' -->
                 <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
                 <a href="{{ url_for('profile') }}">Profile</a>
             </nav>
         </header>
     </div>
-    
-    <div class="post-auth-container">
-        <div class="welcome-message">
-            <h1>Welcome, User! You're logged in!</h1>
-        </div>
-        <div class="button-container">
-            <a href="{{ url_for('camera') }}" class="button">Camera</a>
-        </div>
-    </div>
 
+    <div class="login-container">
+        <!-- Label for the text area -->
+        <h1 class="text-box-label">Tell me more about you!</h1>
+        <!-- Form for submitting the text -->
+        <form action="/submit_profile" method="post">
+            <!-- Large text box for input -->
+            <textarea id="about-you" name="about_you" class="text-box" placeholder="Write about yourself..."></textarea>
+            <!-- Submit button -->
+            <input type="submit" value="Submit" class="button">
+        </form>
+    </div>
+    
     <footer class="footer">
         <p>&copy; 2024 Break the Silence</p>
     </footer>

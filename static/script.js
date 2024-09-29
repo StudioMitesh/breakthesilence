@@ -1,12 +1,15 @@
 // static/js/script.js
 document.addEventListener("DOMContentLoaded", function () {
     const video = document.getElementById('video');
-    const startButton = document.getElementById('start');
+    const startButton = document.getElementById('start'); // Assuming there is a start button
+    const stopButton = document.getElementById('stop-button');
+
+    let stream; // Store the video stream so we can stop it later
 
     // Start the video stream
     async function startVideo() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
+            stream = await navigator.mediaDevices.getUserMedia({
                 video: true
             });
             video.srcObject = stream;
@@ -46,10 +49,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Stop the video stream
+    function stopVideoStream() {
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            video.srcObject = null;
+        }
+    }
+
+    // Add event listener to stop button
+    stopButton.addEventListener('click', stopVideoStream);
+
     // Start the video on page load
     startVideo();
     startRecognition();
     setInterval(fetchLog, 5000);
     fetchLog();
-
 });

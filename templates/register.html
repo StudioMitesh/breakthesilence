@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Link your CSS file -->
 </head>
 <body>
+    <!-- Taskbar/Header -->
+    <div class="top-bar">
+        <header>
+            <h1><a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a></h1>
+            <nav id="top-buttons">
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
+            </nav>
+        </header>
+    </div>
+
+    <!-- Main Register Form -->
     <h1>Register</h1>
     <form method="POST">
         <label>Email:</label>

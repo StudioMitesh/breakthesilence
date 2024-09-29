@@ -132,6 +132,23 @@ def register():
             flash(str(e))
     return render_template('register.html')
 
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
+
+# Profile submission route
+@app.route('/submit_profile', methods=['POST'])
+def submit_profile():
+    # Get the data from the form
+    about_you = request.form.get('about_you')
+    
+    # Here you would save the data to Firebase or any other backend
+    # For example:
+    # save_to_firebase(about_you)
+
+    # Redirect to another page or back to profile after submission
+    return redirect('/profile')
+    
 @app.route('/landing_postauth')
 def landing_postauth():
     return render_template('landing_postauth.html')

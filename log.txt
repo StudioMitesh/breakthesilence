@@ -1,6 +1,0 @@
-Gesture: Victory
-Score: 0.8515235781669617
-
-Gesture: Open_Palm
-Score: 0.7015160918235779
-
