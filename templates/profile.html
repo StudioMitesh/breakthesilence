@@ -1,0 +1,89 @@
+<!-- templates/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<link href="https://fonts.googleapis.com/css2?family=New+Amsterdam:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Profile</title>
+</head>
+<body>
+    <div class="top-bar">
+        <header>
+            <h1><a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a></h1>
+            <nav id="top-buttons">  <!-- Make sure to use id 'top-buttons' -->
+                <a href="{{ url_for('landing_postauth') }}">Camera</a>
+                <a href="{{ url_for('profile') }}">Profile</a>
+            </nav>
+        </header>
+    </div>
+
+    <div class="login-container">
+        <!-- Label for the text area -->
+        <h1 class="text-box-label">Tell me more about you!</h1>
+        <!-- Form for submitting the text -->
+        <form id="profile-form" method="post">
+            <label for="name">Enter your name:</label>
+            <input type="text" id="name" name="name" required>
+            <!-- Large text box for input -->
+            <label for="about-you">About you:</label>
+            <textarea id="about-you" name="about_you" class="text-box" placeholder="Write about yourself..."></textarea>
+            <!-- Submit button -->
+            <button type="submit">Submit Profile</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('profile-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const name = document.getElementById('name').value;
+            const aboutYou = document.getElementById('about-you').value;
+
+            fetch('/update_profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, about_you: aboutYou })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('Profile updated successfully!'); // Show success message
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('There was a problem updating your profile.'); // Show error message
+            });
+
+            // Store the data in Firestore
+            const userId = 'test1'; // Replace with the actual user ID
+
+            const db = firebase.firestore();
+            db.collection("profiles").doc(userId).set({
+                name: name,
+                about_you: aboutYou
+            }, { merge: true }) // Use merge to update without overwriting other data
+            .then(() => {
+                console.log("Profile information saved to Firestore");
+            })
+            .catch((error) => {
+                console.error("Error saving profile information:", error);
+            });
+        });
+
+    </script>
+
+    <footer class="footer">
+        <p>&copy; 2024 Break the Silence</p>
+    </footer>
+</body>
+</html>

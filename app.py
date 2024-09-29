@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
 import threading
 import cv2
 import time
@@ -24,7 +24,7 @@ cred = credentials.Certificate(
     {"type": os.getenv("FIREBASE_TYPE"),
     "project_id": os.getenv("FIREBASE_PROJECT_ID"),
     "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace("\\n", "\n"),
+    "private_key": os.getenv("FIREBASE_PRIVATE_KEY"),
     "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
     "client_id": os.getenv("FIREBASE_CLIENT_ID"),
     "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
@@ -33,7 +33,9 @@ cred = credentials.Certificate(
     "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
     "universe_domain": os.getenv("FIREBASE_DOMAIN")})
 firebase_admin.initialize_app(cred)
+# firebase_admin.initialize_app(cred, {'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")})
 db = firestore.client()
+# bucket = firebase_admin.storage.bucket()
 
 # Global variables for gesture recognition
 is_recognizing = False
@@ -69,14 +71,14 @@ def print_result(result: GestureRecognizerResult, output_image: mp.Image, timest
                 signal_count += 1  # Update signal count when a new gesture is recognized
             past_gesture[0] = gesture_name
         
-        '''# Write to Firestore
+        # Write to Firestore
         user_id = "test1"
         db.collection('gestures').add({
             'user_id': user_id,
             'gesture_name': gesture_name,
             'score': gesture_category.score,
             'timestamp': firestore.SERVER_TIMESTAMP
-        })'''
+        })
 
 def gesture_recognition_function():
     global is_recognizing
@@ -136,32 +138,135 @@ def landing_preauth():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+
         try:
             user = auth.get_user_by_email(email)
-            flash('Login successful!')
+            #TODO: check password and fix the firebase auth using sdk
+            session['user_id'] = user.uid
             return redirect(url_for('landing_postauth'))
         except Exception as e:
-            flash(str(e))
+            flash('Error: {}'.format(e))
+
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+
         try:
-            user = auth.create_user(email=email, password=password)
-            flash('User created successfully!')
+            user = auth.create_user(
+                email=email,
+                password=password
+            )
+            
+            db.collection('users').document(user.uid).set({
+            'name': name,
+            'email': email,
+            'gestureData': [],
+            'profileFile': None  # Will be linked later
+        })
+            flash('Registration successful! You can now log in.')
             return redirect(url_for('login'))
         except Exception as e:
-            flash(str(e))
+            flash('Error: {}'.format(e))
+
     return render_template('register.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    #if 'user_id' not in session:
+     #   return redirect(url_for('login'))
+    return render_template('profile.html')
+
+
+profile_file_path = 'JohnProfile.txt'
+@app.route('/update_profile', methods=['POST'])
+def update_profile():
+    print("Updating profile...")
+    # Get the name from the request
+    data = request.get_json()
+    name = data.get('name', '')
+    about_you = data.get('about_you', '')
+    if not name:
+        return jsonify({"error": "No name provided"}), 400
+
+    try:
+        with open(profile_file_path, 'a') as f:  # Open in append mode
+            f.write('\n' + about_you)
+        print("Successfully wrote to the file.")
+        return jsonify({"message": "Profile updated successfully"}), 200
+    except Exception as e:
+        print(f"Error writing to file: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/secure_endpoint', methods=['GET'])
+def secure_endpoint():
+    id_token = request.headers.get('Authorization').split('Bearer ')[1]
+
+    try:
+        # Verify the token
+        decoded_token = auth.verify_id_token(id_token)
+        uid = decoded_token['uid']
+        return jsonify({'message': 'Token is valid', 'uid': uid})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 401
+
+@app.route('/upload_gesture', methods=['POST'])
+def upload_gesture():
+    #if 'uid' not in session:
+     #   return 'Unauthorized', 401
+    gesture_data = request.json['gesture_data']
+    user_id = session['uid']
+    
+    db.collection('users').document(user_id).collection('gestures').add(gesture_data)
+    return 'Gesture uploaded', 200
+
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+   # if 'uid' not in session:
+    #    return 'Unauthorized', 401
+    user_id = session['uid']
+    file = request.files['file']
+    
+    # Store file on the server or cloud storage
+    file_path = f"user_files/{user_id}/{file.filename}"
+    file.save(file_path)
+    
+    # Store file reference in Firestore
+    db.collection('users').document(user_id).update({
+        'files': firestore.ArrayUnion([file_path])
+    })
+    
+    return 'File uploaded', 200
+
+@app.route('/get_user_data', methods=['GET'])
+def get_user_data():
+  #  if 'uid' not in session:
+   #     return 'Unauthorized', 401
+    user_id = session['uid']
+    
+    user_ref = db.collection('users').document(user_id)
+    user_data = user_ref.get().to_dict()
+    
+    return user_data, 200
 
 @app.route('/landing_postauth')
 def landing_postauth():
+   # if 'user_id' not in session:
+    #    return redirect(url_for('login'))
     return render_template('landing_postauth.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    flash('You have been logged out.')
+    return redirect(url_for('login'))
 
 @app.route('/camera')
 def camera():
@@ -336,11 +441,9 @@ def get_gestures():
         gestures_list = f.readlines()
     print(gestures_list)
     print(gesture_names)
-    '''
     gestures = db.collection('gestures').stream()
     for gesture in gestures:
         gestures_list.append(f"Gesture: {gesture.get('gesture_name')}, Score: {gesture.get('score')}")
-        '''
 
     return jsonify(gestures_list)
 
