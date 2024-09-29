@@ -36,8 +36,6 @@ Here's a breakdown of the main folders and files in the repository:
 - `dataconnect/`: Code and scripts related to Firebase data connections.
 - `static/` & `templates/`: Web assets like CSS, JavaScript, HTML templates.
 - `geminilangchain.py`: Core file for integrating LangChain with gesture and audio recognition.
-- `constant-recording.py`: Script for continuously recording audio in response to gestures.
-- `sound-recording.py`: Handles capturing sound input for audio responses.
 
 ## 🛠️ Installation & Setup
 1. **Clone the repository**:
