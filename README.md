@@ -16,7 +16,7 @@ A transformative platform designed to empower non-verbal children, students, and
 - **Audio Feedback**: Provides real-time audio responses to gestures, enhancing communication effectiveness.
 
 ## ⚙️ Tech Stack
-- **Frontend**: HTML and JavaScript for an intuitive and user-friendly interface.
+- **Frontend**: HTML, CSS and Java,Script for an intuitive and user-friendly interface.
 - **Backend**: Python for efficient data processing and running machine learning algorithms.
 - **Database & Hosting**: [Firebase](https://firebase.google.com/) for real-time data management, hosting, and secure user authentication.
 - **Gesture Recognition**: [MediaPipe](https://google.github.io/mediapipe/) for advanced computer vision capabilities.
