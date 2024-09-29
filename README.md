@@ -55,6 +55,10 @@ Here's a breakdown of the main folders and files in the repository:
 ## 🤝 Contribution
 We welcome contributions to enhance **Break the Silence**. If you're interested in collaborating, please fork the repository and submit a pull request with a detailed description of your changes.
 
+## 🛡️ Ethical Considerations
+While building **Break the Silence**, we focused on developing an inclusive tool to bridge communication gaps for non-verbal individuals. However, we acknowledge the importance of ethical considerations, such as accuracy, privacy, and security. While our gesture recognition aims to be highly accurate, there may be limitations that result in incorrect interpretations.
+
+We take data security seriously, ensuring that user information is securely stored through Firebase and used only for authentication and contextual conversations. Additionally, we strive to minimize hallucinations and inaccuracies from the language model by carefully crafting prompts and tuning model behavior for appropriate outputs.
 
 ## 🙌 Acknowledgments
 - [Firebase](https://firebase.google.com/) for providing real-time database and hosting solutions.
