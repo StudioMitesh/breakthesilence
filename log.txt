@@ -1,6 +1,0 @@
-Gesture: Thumb_Up
-Score: 0.5158771872520447
-
-Gesture: Victory
-Score: 0.6332514882087708
-
