@@ -12,7 +12,7 @@ A transformative platform designed to empower non-verbal children, students, and
    
 ## 🌟 Key Features
 - **Gesture Recognition**: Uses [MediaPipe](https://google.github.io/mediapipe/) for detecting and interpreting a wide range of gestures accurately.
-- **Context-Aware Interactions**: Powered by OpenAI's API and [LangChain](https://langchain.com/) to build context and generate meaningful conversations based on gestures.
+- **Context-Aware Interactions**: Powered by Gemini's API and [LangChain](https://langchain.com/) to build context and generate meaningful conversations based on gestures.
 - **Audio Feedback**: Provides real-time audio responses to gestures, enhancing communication effectiveness.
 
 ## ⚙️ Tech Stack
