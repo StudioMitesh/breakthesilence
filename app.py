@@ -38,14 +38,17 @@ db = firestore.client()
 # bucket = firebase_admin.storage.bucket()
 
 # Global variables for gesture recognition
-is_recognizing = False
+is_recognizing = True
 signal_count = 0
-past_gesture = ["None"]
+past_gesture = "None"
 log_output = []
 gesture_names = []
 running = True
 curr_sequence = []
 dct = {"None": 0, "Open_Palm": 1, "Closed_Fist": 2, "Thumb_Up": 3, "Thumb_Down": 4, "Pointing_Up": 5}
+last_run_time = 0
+buffer_time = 0
+count = 0
 
 
 def print_result(result: GestureRecognizerResult, output_image: mp.Image, timestamp_ms: int):
@@ -53,24 +56,59 @@ def print_result(result: GestureRecognizerResult, output_image: mp.Image, timest
     global gesture_names
     global is_recognizing
     global past_gesture
+    global count
+    global last_run_time
+
+    
     if signal_count >= 2:
         is_recognizing = False
         return
+
     if result.gestures and result.gestures[0]:
-        with app.app_context():
-            stop_audio_recognition()
         gesture_category = result.gestures[0][0]
         gesture_name = gesture_category.category_name
-        if past_gesture[0] != gesture_name:
-            if gesture_name != "None":
-                log_output.append(f'Gesture: {gesture_name}, Score: {gesture_category.score}')
-                with open("./log.txt", "a") as f:
-                    f.write(f'Gesture: {gesture_name}\n')
-                    f.write(f'Score: {gesture_category.score}\n\n')
-                gesture_names.append(gesture_name)
-                signal_count += 1  # Update signal count when a new gesture is recognized
-            past_gesture[0] = gesture_name
+        print(gesture_name)
+        # First gesture recognized
+        current_time = time.time()
+        if signal_count == 0 and gesture_name != "None":
+            log_output.append(f'Gesture: {gesture_name}, Score: {gesture_category.score}')
+            with open("./log.txt", "a") as f:
+                f.write(f'Gesture: {gesture_name}\n')
+            gesture_names.append(gesture_name)
+            signal_count += 1  # Increment signal count after recognizing first gesture
+            #time.sleep(3)
+
+        # Only allow second gesture if "None" was seen in between two gestures
+        elif signal_count == 1 and gesture_name != "None": # current_time - last_run_time >= buffer_time:
+            log_output.append(f'Gesture: {gesture_name}, Score: {gesture_category.score}')
+            with open("./log.txt", "a") as f:
+                f.write(f'Gesture: {gesture_name}\n')
+            gesture_names.append(gesture_name)
+            signal_count += 1  # Increment signal count after recognizing second gesture
+        # Update past_gesture after processing the current gesture
+        past_gesture = gesture_name
+        print(count)
+        if(past_gesture == "None"):
+            print("hi")
+            count+=1
+        else:
+            print("bye")
+            count = 0
+        last_run_time = current_time
         
+        
+
+        # if(signal_count == 1 and past_gesture[1] == "None"):
+        # if past_gesture[0] != gesture_name and past_gesture[1] == "None":
+        #     if gesture_name != "None":
+        #         log_output.append(f'Gesture: {gesture_name}, Score: {gesture_category.score}')
+        #         with open("./log.txt", "a") as f:
+        #             f.write(f'Gesture: {gesture_name}\n')
+        #         gesture_names.append(gesture_name)
+        #         signal_count += 1  # Update signal count when a new gesture is recognized
+        #     past_gesture[0] = past_gesture[1]
+        #     past_gesture[1] = gesture_name
+
         # Write to Firestore
         user_id = "test1"
         db.collection('gestures').add({
@@ -102,6 +140,7 @@ def gesture_recognition_function():
             return
         
         while cap.isOpened():
+            time.sleep(2)
             ret, frame = cap.read()
             if not ret:
                 print("Error: Could not capture frame in video.")
@@ -277,12 +316,8 @@ def llm():
     return render_template('llm.html')
 
 @app.route('/start_audio_recording', methods=['POST'])
-def start_recording():
-    global is_recording
-    is_recording = True
-    print("Starting audio recording...")
-
-    # Audio configuration
+def button_record():
+     # Audio configuration
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 16000
@@ -304,15 +339,83 @@ def start_recording():
     vad = webrtcvad.Vad()
     vad.set_mode(3)  # 0: Very aggressive, 3: Less aggressive
 
-    # Start recording in a separate thread
-    threading.Thread(target=record_audio, args=(vad, stream, audio, CHUNK, RATE, frame_duration_seconds)).start()
-    return jsonify({'status': 'Audio recording started'}), 200
+    button_record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds)
+    return jsonify({'status': 'Recorded audio'}), 200
+
+
+def button_record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds):
+    print("Listening for speech...")
+    current_segment = []
+    silence_frame_count = 0
+    silence_duration = 3  # seconds
+
+    try:
+        while True:
+            frame = stream.read(CHUNK, exception_on_overflow=False)
+            current_segment.append(frame)
+            if is_speech(frame, RATE, vad):
+                print("Speech detected...")
+                silence_frame_count = 0
+            else:
+                silence_frame_count += 1
+                if current_segment and silence_frame_count > (silence_duration / frame_duration_seconds):
+                    print("Silence detected, saving current segment...")
+                    save_audio_wav(audio, current_segment, f"output.wav")
+                    convert_wav_to_mp3(f"output.wav", f"output.mp3")
+                    os.remove(f"output.wav")
+                    current_segment = []
+                    silence_frame_count = 0
+                    process_audios()
+                    # Use application context for the following call
+                    break
+    except Exception as e:
+        print(f"Error while processing frame: {e}")
+    finally:
+        stream.stop_stream()
+        stream.close()
+        audio.terminate()
+
+
+
+# def start_recording():
+#     global is_recording
+#     is_recording = True #change this back to true later
+#     print("Starting audio recording...")
+
+#     # Audio configuration
+#     FORMAT = pyaudio.paInt16
+#     CHANNELS = 1
+#     RATE = 16000
+#     frame_duration_ms = 30
+#     frame_duration_seconds = frame_duration_ms / 1000
+#     CHUNK = int(RATE * frame_duration_seconds)
+
+#     # Initialize PyAudio
+#     audio = pyaudio.PyAudio()
+
+#     # Open stream
+#     stream = audio.open(format=FORMAT,
+#                         channels=CHANNELS,
+#                         rate=RATE,
+#                         input=True,
+#                         frames_per_buffer=CHUNK)
+
+#     # Initialize VAD
+#     vad = webrtcvad.Vad()
+#     vad.set_mode(3)  # 0: Very aggressive, 3: Less aggressive
+
+#     record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds)
+
+#     # Start recording in a separate thread
+#     threading.Thread(target=record_audio, args=(vad, stream, audio, CHUNK, RATE, frame_duration_seconds)).start()
+#     return jsonify({'status': 'Audio recording started'}), 200
 
 def is_speech(frame, sample_rate, vad):
     return vad.is_speech(frame, sample_rate)
 
-def record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds):
+'''def record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds):
     global is_recording
+    is_recording = True #change this later! 
     print("Listening for speech...")
     current_segment = []
     silence_frame_count = 0
@@ -345,7 +448,8 @@ def record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds):
     finally:
         stream.stop_stream()
         stream.close()
-        audio.terminate()
+        audio.terminate()'''
+
 def save_audio_wav(audio, frames, filename="output.wav"):
     """Save the recorded audio as a WAV file."""
     if frames:  # Ensure there are frames to save
@@ -366,11 +470,11 @@ def convert_wav_to_mp3(wav_filename, mp3_filename):
     print(f"Converted {wav_filename} to {mp3_filename}")
 
 
-@app.route('/stop_audio_recording', methods=['POST'])
+'''@app.route('/stop_audio_recording', methods=['POST'])
 def stop_audio_recognition():
     global is_recording
     is_recording = False
-    return jsonify({'status': 'Audio recording stopped'}), 200
+    return jsonify({'status': 'Audio recording stopped'}), 200'''
 
 
 @app.route('/start_gesture_recognition', methods=['POST'])
@@ -379,8 +483,12 @@ def start_gesture_recognition():
     global signal_count
     global running
     global curr_sequence
+    global log_output
+    log_output = []
     print("start button clicked")
-    open('./log.txt', 'w').close()
+    with open('./log.txt', 'w') as f:
+        f.write('')  # Clear the file content
+    print('erased the content')
     gesture_names = []
     signal_count = 0
     global is_recognizing
@@ -399,39 +507,30 @@ def stop_gesture_recognition():
 def run_gesture_recognition():
     print("gesture recognition running")
     global is_recognizing
-    global is_recording
     global signal_count
     global gesture_names
     global curr_sequence
     global past_gesture
     global log_output
     global running
-    while running and (is_recognizing or is_recording):
+    while running:
         gesture_recognition_function()
-        record_audio()
         if not is_recognizing: #finished recognizing
             print("processing gestures")
-            stop_audio_recognition()
-            print("stopped audio recognition")
             with app.app_context():
                 process_gestures()
             print("finished processing gestures & end of llm call")
-        elif not is_recording: #finished recording
-            print("processing audio")
-            with app.app_context():
-                process_audios()
-                print("finished processing audio")
+        if curr_sequence == [5,5]:
+            running = False
+            return jsonify({'status': 'Everything has just ended'}), 200
         if running:
             gesture_names = []
             signal_count = 0
             is_recognizing = True
-            is_recording = True
             curr_sequence = []
-            past_gesture = ["None"]
+            past_gesture = []
             log_output = []
-        if curr_sequence == [5,5]:
-            running = False
-            return jsonify({'status': 'Everything has just ended'}), 200
+
 
 @app.route('/get_gestures', methods=['GET'])
 def get_gestures():
@@ -440,10 +539,11 @@ def get_gestures():
     with open("./log.txt", "r") as f:
         gestures_list = f.readlines()
     print(gestures_list)
-    print(gesture_names)
+    '''
     gestures = db.collection('gestures').stream()
     for gesture in gestures:
         gestures_list.append(f"Gesture: {gesture.get('gesture_name')}, Score: {gesture.get('score')}")
+        '''
 
     return jsonify(gestures_list)
 
@@ -468,7 +568,10 @@ def process_gestures():
     print("gemini response")
     response = geminilangchain_llm_call(sequence)
     text_to_speech(response)
+    print(response)
     curr_sequence = sequence
+    with open('./log.txt', 'w') as f:
+        f.write('')  # Clear the file content
     return jsonify({'response': response}), 200
 
 def geminilangchain_llm_call(designation):
