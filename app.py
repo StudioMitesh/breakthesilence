@@ -7,7 +7,7 @@ from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions, GestureRecognizerResult
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
-from geminilangchain import user_call, send_message, text_to_speech, flow
+from geminilangchain import user_call, send_message, text_to_speech, flow, speech_to_text
 from dotenv import load_dotenv
 import os
 import pyaudio
@@ -50,10 +50,13 @@ def print_result(result: GestureRecognizerResult, output_image: mp.Image, timest
     global signal_count
     global gesture_names
     global is_recognizing
+    global past_gesture
     if signal_count >= 2:
         is_recognizing = False
         return
     if result.gestures and result.gestures[0]:
+        with app.app_context():
+            stop_audio_recognition()
         gesture_category = result.gestures[0][0]
         gesture_name = gesture_category.category_name
         if past_gesture[0] != gesture_name:
@@ -277,12 +280,8 @@ def start_gesture_recognition():
     signal_count = 0
     global is_recognizing
     is_recognizing = True
-    while running:
-        threading.Thread(target=run_gesture_recognition).start()
-        if curr_sequence == [5,5]:
-            running = False
-            return jsonify({'status': 'Gesture recognition just ended'}), 200
-        return jsonify({'status': 'Gesture recognition started'}), 200
+    threading.Thread(target=run_gesture_recognition).start()
+    return jsonify({'status': 'Gesture recognition started'}), 200
 
 @app.route('/stop_gesture_recognition', methods=['POST'])
 def stop_gesture_recognition():
@@ -295,12 +294,39 @@ def stop_gesture_recognition():
 def run_gesture_recognition():
     print("gesture recognition running")
     global is_recognizing
-    gesture_recognition_function()
-    if not is_recognizing:
-        print("processing gestures")
-        with app.app_context():
-            process_gestures()
-        stop_gesture_recognition()
+    global is_recording
+    global signal_count
+    global gesture_names
+    global curr_sequence
+    global past_gesture
+    global log_output
+    global running
+    while running and (is_recognizing or is_recording):
+        gesture_recognition_function()
+        record_audio()
+        if not is_recognizing: #finished recognizing
+            print("processing gestures")
+            stop_audio_recognition()
+            print("stopped audio recognition")
+            with app.app_context():
+                process_gestures()
+            print("finished processing gestures & end of llm call")
+        elif not is_recording: #finished recording
+            print("processing audio")
+            with app.app_context():
+                process_audios()
+                print("finished processing audio")
+        if running:
+            gesture_names = []
+            signal_count = 0
+            is_recognizing = True
+            is_recording = True
+            curr_sequence = []
+            past_gesture = ["None"]
+            log_output = []
+        if curr_sequence == [5,5]:
+            running = False
+            return jsonify({'status': 'Everything has just ended'}), 200
 
 @app.route('/get_gestures', methods=['GET'])
 def get_gestures():
@@ -317,6 +343,10 @@ def get_gestures():
         '''
 
     return jsonify(gestures_list)
+
+
+def process_audios():
+    speech_to_text("output.mp3")
 
 @app.route('/process_gestures', methods=['POST'])
 def process_gestures():

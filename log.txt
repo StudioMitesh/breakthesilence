@@ -1,6 +1,0 @@
-Gesture: Open_Palm
-Score: 0.5712233781814575
-
-Gesture: Open_Palm
-Score: 0.6193751096725464
-
