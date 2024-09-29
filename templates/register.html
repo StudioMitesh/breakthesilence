@@ -1,20 +1,41 @@
+<!-- templates/register.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
+    <script type="module" src="{{ url_for('static', filename='login.js') }}"></script>
     <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Link your CSS file -->
 </head>
 <body>
+    <!-- Taskbar/Header -->
+    <div class="top-bar">
+        <header>
+            <h1><a href="{{ url_for('landing_preauth') }}" class="home-link">Break the Silence</a></h1>
+            <nav id="top-buttons">
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('landing_postauth') }}">Post Auth Landing</a>
+            </nav>
+        </header>
+    </div>
+
+    <!-- Main Register Form -->
     <h1>Register</h1>
-    <form method="POST">
+    <form id="register-form" onsubmit="event.preventDefault(); register();">
+        <label>Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
         <label>Email:</label>
-        <input type="email" name="email" required>
+        <input type="email" id="email" name="email" required>
         <br>
         <label>Password:</label>
-        <input type="password" name="password" required>
+        <input type="password" id="password" name="password" required>
         <br>
         <input type="submit" value="Register">
     </form>
+    
 </body>
 </html>

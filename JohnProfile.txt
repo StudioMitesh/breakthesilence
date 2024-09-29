@@ -42,4 +42,6 @@ John works part-time at an animal shelter where he helps take care of the pets. 
 Other Relevant Information:
 John communicates using a text-based app, selecting pre-programmed phrases to express his needs and thoughts.
 He enjoys quiet environments and prefers a structured routine.
-John is close to his family, especially his younger sister, Emma, who often helps him with daily tasks.
+John is close to his family, especially his younger sister, Emma, who often helps him with daily tasks.Name: John
+About: John is a gymnast as well!
+
