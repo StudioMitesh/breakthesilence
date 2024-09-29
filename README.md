@@ -21,7 +21,6 @@ A transformative platform designed to empower non-verbal children, students, and
 - **Database & Hosting**: [Firebase](https://firebase.google.com/) for real-time data management, hosting, and secure user authentication.
 - **Gesture Recognition**: [MediaPipe](https://google.github.io/mediapipe/) for advanced computer vision capabilities.
 - **Language Models**: OpenAI API and [LangChain](https://langchain.com/) for contextually rich and accurate dialogue generation.
-- **Deployment**: Hosted on [Heroku](https://www.heroku.com/) integrated with Firebase databases for seamless real-time performance.
 
 ## 💡 How It Works
 1. **Gesture Recognition**: The platform uses the user's webcam to capture gestures, which are processed and recognized by the MediaPipe computer vision library.
@@ -32,7 +31,7 @@ A transformative platform designed to empower non-verbal children, students, and
 Here's a breakdown of the main folders and files in the repository:
 
 - `.firebase`: Configurations and settings for Firebase hosting and database.
-- `.github/workflows`: CI/CD workflows for deployment using Heroku and Firebase.
+- `.github/workflows`: CI/CD workflows for deployment using Firebase.
 - `cv/`: Frontend work, including landing and login pages.
 - `dataconnect/`: Code and scripts related to Firebase data connections.
 - `static/` & `templates/`: Web assets like CSS, JavaScript, HTML templates.
@@ -58,8 +57,6 @@ Here's a breakdown of the main folders and files in the repository:
 ## 🤝 Contribution
 We welcome contributions to enhance **Break the Silence**. If you're interested in collaborating, please fork the repository and submit a pull request with a detailed description of your changes.
 
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙌 Acknowledgments
 - [Firebase](https://firebase.google.com/) for providing real-time database and hosting solutions.
