@@ -10,6 +10,10 @@ from firebase_admin import credentials, firestore, auth
 from geminilangchain import user_call, send_message, text_to_speech, flow
 from dotenv import load_dotenv
 import os
+import pyaudio
+import webrtcvad
+import wave
+from pydub import AudioSegment
 
 load_dotenv()
 
@@ -202,17 +206,16 @@ def is_speech(frame, sample_rate, vad):
 def record_audio(vad, stream, audio, CHUNK, RATE, frame_duration_seconds):
     global is_recording
     print("Listening for speech...")
-    audio_segments = []
     current_segment = []
     silence_frame_count = 0
-    silence_duration = 2.5
+    silence_duration = 3  # seconds
 
     try:
         while is_recording:
             frame = stream.read(CHUNK, exception_on_overflow=False)
+            current_segment.append(frame)
             if is_speech(frame, RATE, vad):
                 print("Speech detected...")
-                current_segment.append(frame)
                 silence_frame_count = 0
             else:
                 silence_frame_count += 1

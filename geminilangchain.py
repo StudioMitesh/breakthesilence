@@ -9,11 +9,41 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.output_parser import StrOutputParser
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
+from langchain.vectorstores import FAISS
+
 
 designation = []
+
+#Instantiate Context and Vector Store
+TEXT_FILE_PATH = "JohnProfile.txt"
+with open(TEXT_FILE_PATH, "r", encoding="utf-8") as file:
+    text = file.read()
+
+# Split text into chunks
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=200,  # Adjust based on your needs
+    chunk_overlap=50,  # Overlap between chunks
+    separators=["\n\n", "\n", " ", ""]
+)
+chunks = text_splitter.split_text(text)
+
+#Embeddings
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+vector_store = FAISS.from_texts(chunks, embedding_model)
+
+# Initialize the retriever
+retriever = vector_store.as_retriever()
+
+# Optionally, configure the retriever
+retriever.search_kwargs.update({
+    "k": 2,  # Number of relevant chunks to retrieve
+})
+
 
 #instantiate model
 load_dotenv()
@@ -24,16 +54,17 @@ output_parser = StrOutputParser()
 
 #Define prompt
 gen_prompt = ChatPromptTemplate.from_messages([
-    SystemMessage('You are an AI assistant designed to help non-verbal individuals communicate. All responses should be said as if you are the user. '
+    ("system", 'You are an AI assistant designed to help non-verbal individuals communicate. All responses should be said as if you are the user. '
         'Do not make up additional details. Do not request more context, but feel free to elaborate slightly without making up information.'
         'Please include proper language pleasentries in your output. You will receive input representing a category and subcategory.'
         'Your task is to interpret these and generate natural, context-appropriate responses that the user might want to communicate.'
         'Be concise, clear, and empathetic in your responses. Always prioritize the user intent and generate responses that sound natural when spoken aloud.'
-        'Do not place quotes at the beginning or end of your response.'),
+        'Do not place quotes at the beginning or end of your response. Try and elaborate slightly and use filler words on your output to make the text more humanistic.'
+        'Use these retrieved documents as context whenever necessary: {retrieved_documents}'),
     MessagesPlaceholder(variable_name="messages"),
-    HumanMessage("user_input"),
-
+    ("human","user_input"),
 ])
+
 
 #memory instantiation
 workflow = StateGraph(state_schema=MessagesState)
@@ -46,7 +77,14 @@ def call_llm(state: MessagesState):
     human_messages = [msg.content for msg in state["messages"] if isinstance(msg, HumanMessage)]
     user_input = human_messages[-1] if human_messages else ""
 
-    response = chain.invoke({"messages": state["messages"], "user_input": user_input})
+    # Retrieve relevant documents based on the user input
+    retrieved_docs = retriever.get_relevant_documents(user_input)
+    
+    # Concatenate the content of retrieved documents
+    retrieved_content = "\n\n".join([doc.page_content for doc in retrieved_docs])
+    print(retrieved_content)
+
+    response = chain.invoke({"messages": state["messages"], "user_input": user_input, "retrieved_documents": retrieved_content})
 
     ai_message = AIMessage(content=response)
     new_messages = state["messages"] + [ai_message]
@@ -59,6 +97,14 @@ workflow.add_edge(START, "llm_model")
 #in-memory checkpointer
 memory = MemorySaver()
 flow = workflow.compile(checkpointer=memory)
+
+#Speech to Text
+audio_model = whisper.load_model("base")
+question = "What is the meaning of life?"
+def speech_to_text(audio_file):
+    audio_result = audio_model.transcribe(audio_file)
+    question = audio_result
+
 
 #send message to app
 def send_message(flow, user_content, thread_id="1"):
@@ -105,7 +151,7 @@ def user_call(sequence) -> str:
             subcategory = "Help/Assistance"
         elif (sequence[1] == 5):
             subcategory = "Reiterate previous statement with emphasis"
-        return f"You are assisting someone who is nonverbal. Based on the category {category} and the subcategory {subcategory}, generate a natural sentence or phrase they might use to communicate this need. Keep the tone simple and polite and if it is non-empty consider the, additional prompt: {additional_prompt}."
+        return f"You are assisting someone who is nonverbal. Based on the category {category} and the subcategory {subcategory}, generate a natural sentence or phrase they might use to communicate this need. Keep the tone simple and polite and {additional_prompt} using the retrieved documents."
     if (sequence[0] == 2):
         category = "Medical Status"
         if (sequence[1] == 1):
@@ -119,13 +165,13 @@ def user_call(sequence) -> str:
             additional_prompt = "List my favorite doctor"
         elif (sequence[1] == 5):
             subcategory = "Reiterate previous statement with emphasis using the message history, this should not be a generic emphasis"
-        return f"You are assisting someone who is nonverbal. Based on the category {category} and the subcategory {subcategory}, generate a natural sentence or phrase they might use to describe their current medical condition or request medical attention. Keep the tone simple and clear, and if it is non-empty consider the, additional prompt: {additional_prompt}. Feel free to elaborate slightly and use filler words to make the text more humanistic."
+        return f"You are assisting someone who is nonverbal. Based on the category {category} and the subcategory {subcategory}, generate a natural sentence or phrase they might use to describe their current medical condition or request medical attention. Keep the tone simple and clear, and if it is non-empty answer the, additional prompt: {additional_prompt} using the retrieved documents. Feel free to elaborate slightly and use filler words to make the text more humanistic."
     if (sequence[0] == 3):
         category = "Affirming"
         if (sequence[1] == 1):
             task = f"Answer the {question} in an affirming way. Ask them their opinon"
         elif (sequence[1] == 2):
-            task = "Answer the {question} in an affirming way."
+            task = f"Answer the {question} in an affirming way."
         elif (sequence[1] == 3):
             task = "Agree strongly"
         elif (sequence[1] == 4):
@@ -138,7 +184,7 @@ def user_call(sequence) -> str:
         if (sequence[1] == 1):
             task = f"Answer the {question} in an disaffirming way. Ask them their opinon"
         elif (sequence[1] == 2):
-            task = "Answer the {question} in an disaffirming way."
+            task = f"Answer the {question} in an disaffirming way."
         elif (sequence[1] == 3):
             task = "Disagree strongly"
         elif (sequence[1] == 4):
@@ -158,7 +204,8 @@ def user_call(sequence) -> str:
             subcategory = "Imply uncertainty, that the user is not sure"
         elif (sequence[1] == 5):
             subcategory = "End the conversation"
-        return f"You are assisting someone who is nonverbal. Based on the category {category} and the subcategory {subcategory}, generate a natural sentence or phrase they might use in this situation. Keep the tone polite and clear."
+    return f"You are assisting someone who is nonverbal. Based on the category {category} and the subcategory {subcategory}, generate a natural sentence or phrase they might use in this situation. Keep the tone polite and clear."
+
 '''
 prompt = user_call([1,2])
 response1 = send_message(app, prompt)
