@@ -33,6 +33,7 @@ Here's a breakdown of the main folders and files in the repository:
 - `.firebase`: Configurations and settings for Firebase hosting and database.
 - `.github/workflows`: CI/CD workflows for deployment using Firebase.
 - `dataconnect/`: Code and scripts related to Firebase data connections.
+- `cv/`: Contains computer vision modules for gesture recognition and processing.
 - `static/` & `templates/`: Web assets like CSS, JavaScript, HTML templates.
 - `geminilangchain.py`: Core file for integrating LangChain with gesture and audio recognition.
 
